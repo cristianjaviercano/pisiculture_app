@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alimentación — Aquashell</title>
+  <link rel="icon" href="../img/aquashell.png"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">v3.0</span></div></div>
+    <div class="sidebar-user"><div class="user-avatar" id="sidebarUserAvatar">U</div><div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">PRINCIPAL</div>
+      <a href="dashboard.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <div class="nav-section">OPERACIONES</div>
+      <a href="water-quality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua</a>
+      <a href="feeding.html" class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Alimentación</a>
+      <a href="mortality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad</a>
+      <a href="biometry.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo</a>
+      <a href="inputs.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18"/></svg>Insumos</a>
+      <div class="nav-section">ANÁLISIS</div>
+      <a href="reports.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Informes</a>
+      <div class="nav-section">SISTEMA</div>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/></svg>Cerrar Sesión</a>
+    </nav>
+    <div class="sidebar-footer"><div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div><div class="page-title">🥗 Registro de Alimentación</div><div class="page-subtitle">CU-AQUA-04 · Hard Limit por biomasa</div></div>
+    </header>
+
+    <div class="page-body">
+      <!-- Selector -->
+      <div class="card mb-6" style="margin-bottom:var(--space-6)">
+        <div class="card-body">
+          <div class="grid-2" style="gap:var(--space-4);align-items:end">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Estanque / Lote <span class="form-required">*</span></label>
+              <select class="form-select" id="loteSelect"></select>
+            </div>
+            <div id="loteInfo" style="font-size:var(--text-sm);color:var(--text-muted)">Selecciona un estanque</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Retiro alert -->
+      <div id="retiroAlert" class="alert bloqueado" style="display:none;margin-bottom:var(--space-6)">
+        <span class="alert-icon">⛔</span>
+        <div class="alert-body">
+          <div class="alert-title">COSECHA Y ALIMENTACIÓN BLOQUEADAS</div>
+          <div id="retiroMsg">Este lote tiene un insumo con período de retiro activo.</div>
+        </div>
+      </div>
+
+      <!-- LMAx Panel -->
+      <div id="lmaxPanel" class="card mb-6" style="display:none;margin-bottom:var(--space-6)">
+        <div class="card-header"><div class="card-title">⚖️ Límite Máximo de Alimentación (LMAx) — Hoy</div></div>
+        <div class="card-body">
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+            <div class="kpi-card"><div class="kpi-label">LMAx del día</div><div class="kpi-value cyan" id="lmaxKg">—</div><div class="kpi-unit">kg</div></div>
+            <div class="kpi-card"><div class="kpi-label">Ya suministrado</div><div class="kpi-value" id="fedKg">—</div><div class="kpi-unit">kg</div></div>
+            <div class="kpi-card"><div class="kpi-label">Disponible</div><div class="kpi-value ok" id="remainKg">—</div><div class="kpi-unit">kg</div></div>
+            <div class="kpi-card"><div class="kpi-label">% Consumido</div><div class="kpi-value" id="pctConsumed">—</div><div class="kpi-unit">%</div></div>
+          </div>
+          <div class="progress-bar mt-4" style="margin-top:var(--space-4)"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="card" id="formCard">
+        <div class="card-header"><div class="card-title">📝 Nueva Ración</div></div>
+        <div class="card-body">
+          <form id="feedForm" onsubmit="handleSubmit(event)">
+            <div class="grid-2" style="gap:var(--space-6)">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Cantidad a suministrar (kg) <span class="form-required">*</span></label>
+                <div class="input-unit">
+                  <input type="number" id="kgInput" class="form-input" min="0.1" max="100" step="0.1" placeholder="ej. 3.5" required oninput="validateAmount()"/>
+                  <span class="unit-label">kg</span>
+                </div>
+                <div id="feedFeedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Número de raciones hoy</label>
+                <select class="form-select" id="nRaciones">
+                  <option value="1">1 ración</option>
+                  <option value="2">2 raciones</option>
+                  <option value="3" selected>3 raciones (recomendado)</option>
+                  <option value="4">4 raciones</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group mt-4" style="margin-top:var(--space-4)">
+              <label class="form-label">Tipo de alimento</label>
+              <select class="form-select" id="tipoAlimento">
+                <option value="pellet_flotante_28">Pellet flotante 28% proteína</option>
+                <option value="pellet_flotante_32" selected>Pellet flotante 32% proteína</option>
+                <option value="pellet_flotante_36">Pellet flotante 36% proteína</option>
+                <option value="pellet_hundible">Pellet hundible</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Observaciones</label>
+              <textarea class="form-textarea" id="obs" placeholder="Comportamiento de los peces, rechazos, horario..."></textarea>
+            </div>
+
+            <div id="blockAlert" class="alert critical" style="display:none;margin-bottom:var(--space-4)">
+              <span class="alert-icon">🚫</span>
+              <div class="alert-body"><div class="alert-title">HARD LIMIT EXCEDIDO</div><div id="blockMsg">La cantidad ingresada supera el LMAx permitido para hoy.</div></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>💾 Registrar Alimentación</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="toastContainer"></div>
+
+<script type="module">
+import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getRetiroActivo, getFeedTodayKg, getLatestWaterReading, put } from '../js/db.js';
+import { ROLES, showToast, daysSince } from '../js/auth.js';
+import { calculateLMax, validateFeedAmount, SPECIES_CONFIG } from '../js/biomassEngine.js';
+
+const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
+if (!session) { window.location.href = '../index.html'; }
+const activeFarmId = sessionStorage.getItem('aq_active_farm');
+const role = session.rol;
+
+document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
+document.getElementById('sidebarUserName').textContent   = session.nombre;
+document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
+document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('mainSidebar').classList.toggle('open'));
+document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
+function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
+updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
+
+await openDB(); await seedDemoData();
+
+const fincas = await getFincas(session.id_tenant || 'tenant-001');
+const target = activeFarmId ? fincas.filter(f=>f.id===activeFarmId) : fincas;
+const loteSelect = document.getElementById('loteSelect');
+loteSelect.innerHTML = '<option value="">— Selecciona estanque —</option>';
+
+let lotesMap = {};
+for (const finca of target) {
+  const ests = await getEstanques(finca.id);
+  for (const est of ests) {
+    const lote = await getActiveLoteByEstanque(est.id);
+    if (!lote || lote.estado !== 'activo') continue;
+    loteSelect.innerHTML += `<option value="${lote.id}">${est.nombre} — ${finca.nombre}</option>`;
+    lotesMap[lote.id] = { lote, est, finca };
+  }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('lote')) loteSelect.value = urlParams.get('lote');
+
+let currentLmax = null;
+let currentAlreadyFed = 0;
+let currentBlocked = false;
+
+loteSelect.addEventListener('change', loadLote);
+await loadLote();
+
+async function loadLote() {
+  const loteId = loteSelect.value;
+  const info = document.getElementById('loteInfo');
+  const lmaxPanel = document.getElementById('lmaxPanel');
+  const retiroAlert = document.getElementById('retiroAlert');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (!loteId || !lotesMap[loteId]) {
+    info.textContent='Selecciona un estanque'; lmaxPanel.style.display='none';
+    submitBtn.disabled=true; return;
+  }
+  const {lote, est} = lotesMap[loteId];
+  const dias = daysSince(lote.fecha_inicio);
+  const biomKg = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(1);
+  info.innerHTML = `<span style="color:var(--color-cyan);font-weight:600">${est.nombre}</span> · Día ${dias} · ${lote.count_actual} peces · ${biomKg} kg biomasa`;
+
+  // Check retiro
+  const retiro = await getRetiroActivo(loteId);
+  if (retiro) {
+    retiroAlert.style.display='flex';
+    document.getElementById('retiroMsg').textContent = `Retiro activo hasta: ${retiro.fecha_fin_retiro}. No se puede registrar alimentación.`;
+    submitBtn.disabled=true; currentBlocked=true;
+    lmaxPanel.style.display='none'; return;
+  }
+  retiroAlert.style.display='none'; currentBlocked=false;
+
+  // Calculate LMAx
+  const reading = await getLatestWaterReading(loteId);
+  const temp = reading?.temperatura || 27;
+  const biomass = lote.count_actual * lote.peso_actual_g / 1000;
+  const lmaxResult = calculateLMax(biomass, temp, lote.especie || 'tilapia_nilotica');
+  const fedToday = await getFeedTodayKg(loteId);
+
+  currentLmax = lmaxResult.lmax_kg;
+  currentAlreadyFed = fedToday;
+
+  document.getElementById('lmaxKg').textContent    = currentLmax;
+  document.getElementById('fedKg').textContent     = fedToday.toFixed(1);
+  const remain = Math.max(0, currentLmax - fedToday);
+  document.getElementById('remainKg').textContent  = remain.toFixed(1);
+  const pct = Math.min(100, (fedToday / currentLmax) * 100);
+  document.getElementById('pctConsumed').textContent = pct.toFixed(0);
+
+  const bar = document.getElementById('progressBar');
+  bar.style.width = pct + '%';
+  bar.className = 'progress-fill' + (pct >= 100 ? ' critical' : pct >= 80 ? ' warn' : '');
+
+  lmaxPanel.style.display='block';
+  submitBtn.disabled = (remain <= 0);
+  if (remain <= 0) showToast('LMAx del día agotado. No se puede registrar más alimentación hoy.', 'warn');
+}
+
+window.validateAmount = function() {
+  const val = parseFloat(document.getElementById('kgInput').value);
+  const fb  = document.getElementById('feedFeedback');
+  const blockAlert = document.getElementById('blockAlert');
+  const submitBtn  = document.getElementById('submitBtn');
+
+  if (!currentLmax || currentBlocked) return;
+  if (isNaN(val) || val <= 0) { fb.textContent=''; blockAlert.style.display='none'; return; }
+
+  const result = validateFeedAmount(val, currentLmax, currentAlreadyFed);
+  if (result.blocked) {
+    fb.textContent = `⚠️ Excede el límite — solo puedes suministrar ${result.remaining_kg} kg más hoy`;
+    fb.style.color = 'var(--color-critical)';
+    blockAlert.style.display='flex';
+    document.getElementById('blockMsg').textContent = `Cantidad ingresada: ${val} kg. LMAx: ${result.lmax_kg} kg. Ya suministrado: ${result.already_fed_kg} kg. Exceso: ${result.excess_kg} kg.`;
+    submitBtn.disabled=true;
+  } else {
+    fb.textContent = `✅ OK — Quedarán ${(result.remaining_kg - val).toFixed(1)} kg disponibles`;
+    fb.style.color = 'var(--color-ok)';
+    blockAlert.style.display='none';
+    submitBtn.disabled=false;
+  }
+};
+
+window.handleSubmit = async function(e) {
+  e.preventDefault();
+  const loteId = loteSelect.value;
+  if (!loteId) { showToast('Selecciona un estanque', 'warn'); return; }
+  const kg = parseFloat(document.getElementById('kgInput').value);
+  if (isNaN(kg) || kg <= 0) { showToast('Ingresa una cantidad válida', 'warn'); return; }
+
+  const result = validateFeedAmount(kg, currentLmax, currentAlreadyFed);
+  if (result.blocked) { showToast('Hard Limit excedido — no se puede registrar', 'critical'); return; }
+
+  const record = {
+    id: `alim-${Date.now()}`,
+    id_lote: loteId,
+    id_tenant: session.id_tenant || 'tenant-001',
+    fecha: new Date().toISOString().slice(0,10),
+    kg_suministrado: kg,
+    lmax_kg: currentLmax,
+    n_raciones: parseInt(document.getElementById('nRaciones').value),
+    tipo_alimento: document.getElementById('tipoAlimento').value,
+    observaciones: document.getElementById('obs').value,
+    sync_status: 'pending'
+  };
+
+  await put('registros_alim', record);
+
+  // Update lote total feed
+  const {lote} = lotesMap[loteId];
+  lote.total_alimento_kg = (lote.total_alimento_kg || 0) + kg;
+  await put('lotes', lote);
+
+  showToast(`✅ ${kg} kg registrados. Disponible: ${(result.remaining_kg - kg).toFixed(1)} kg más hoy.`, 'ok');
+  e.target.reset();
+  document.getElementById('feedFeedback').textContent='';
+  document.getElementById('blockAlert').style.display='none';
+  await loadLote();
+};
+</script>
+</body>
+</html>

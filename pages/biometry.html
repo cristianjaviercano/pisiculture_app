@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Muestreo Biométrico — Aquashell</title>
+  <link rel="icon" href="../img/aquashell.png"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">v3.0</span></div></div>
+    <div class="sidebar-user"><div class="user-avatar" id="sidebarUserAvatar">U</div><div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">PRINCIPAL</div>
+      <a href="dashboard.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <div class="nav-section">OPERACIONES</div>
+      <a href="water-quality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua</a>
+      <a href="feeding.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg>Alimentación</a>
+      <a href="mortality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad</a>
+      <a href="biometry.html" class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo Biométrico</a>
+      <a href="inputs.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18"/></svg>Insumos</a>
+      <div class="nav-section">ANÁLISIS</div>
+      <a href="reports.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Informes</a>
+      <div class="nav-section">SISTEMA</div>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/></svg>Cerrar Sesión</a>
+    </nav>
+    <div class="sidebar-footer"><div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div><div class="page-title">📏 Muestreo Biométrico</div><div class="page-subtitle">CU-AQUA-07 · CV%, Von Bertalanffy, actualización de LMAx</div></div>
+    </header>
+
+    <div class="page-body">
+      <div class="card mb-6" style="margin-bottom:var(--space-6)">
+        <div class="card-body">
+          <div class="grid-2" style="gap:var(--space-4);align-items:end">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Estanque / Lote</label>
+              <select class="form-select" id="loteSelect"></select>
+            </div>
+            <div id="loteInfo" style="font-size:13px;color:var(--text-muted)">Selecciona un estanque</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:var(--space-6)">
+        <!-- Ingreso de pesos -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">⚖️ Ingresar Pesos del Muestreo</div></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Pesos individuales (g) — mín. 10 peces</label>
+              <textarea class="form-textarea" id="pesosInput" rows="6" placeholder="Ingresa un peso por línea o separados por coma:&#10;120&#10;135&#10;118&#10;142..."></textarea>
+              <div class="form-hint">Ingresa cada peso en gramos, uno por línea. Mínimo 10 peces, recomendado 20-50.</div>
+            </div>
+            <button class="btn btn-primary" onclick="calcularMuestra()">📊 Calcular Estadísticas</button>
+          </div>
+        </div>
+
+        <!-- Resultados en vivo -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">📈 Resultados del Muestreo</div></div>
+          <div class="card-body" id="resultPanel">
+            <div class="empty-state" style="padding:24px;text-align:center">
+              <div style="font-size:32px;margin-bottom:8px">📏</div>
+              <p style="color:var(--text-muted);font-size:13px">Ingresa los pesos y presiona "Calcular"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guardar -->
+      <div class="card mt-6" style="margin-top:var(--space-6)">
+        <div class="card-header"><div class="card-title">💾 Guardar Muestreo</div></div>
+        <div class="card-body">
+          <div id="savePanel" style="opacity:0.4;pointer-events:none">
+            <div class="alert info mb-4" id="saveAlert" style="margin-bottom:var(--space-4)">
+              <span>ℹ️</span><div>Calcula el muestreo primero para habilitar el guardado.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Observaciones del muestreo</label>
+              <textarea class="form-textarea" id="muestreoObs" placeholder="Estado de los peces, condiciones del muestreo..."></textarea>
+            </div>
+            <button class="btn btn-primary btn-lg" id="saveBtn" onclick="guardarMuestra()">💾 Guardar y Actualizar LMAx</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historial -->
+      <div class="card mt-6" style="margin-top:var(--space-6)">
+        <div class="card-header"><div class="card-title">📋 Historial de Muestreos</div></div>
+        <div class="card-body" style="padding:0"><div class="table-wrap" id="histTable"><div class="empty-state" style="padding:24px"><p>Selecciona un estanque</p></div></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="toastContainer"></div>
+
+<script type="module">
+import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getMuestreos, put, getById } from '../js/db.js';
+import { ROLES, showToast, daysSince, formatNum } from '../js/auth.js';
+import { calculateBiometrySample, calculateLMax, SPECIES_CONFIG } from '../js/biomassEngine.js';
+
+const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
+if (!session) { window.location.href = '../index.html'; }
+// Only coordinador+ can access
+if (!['coordinador','gerente','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
+
+const activeFarmId = sessionStorage.getItem('aq_active_farm');
+const role = session.rol;
+
+document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
+document.getElementById('sidebarUserName').textContent   = session.nombre;
+document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
+document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('mainSidebar').classList.toggle('open'));
+document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
+function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
+updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
+
+await openDB(); await seedDemoData();
+
+const fincas = await getFincas(session.id_tenant || 'tenant-001');
+const target = activeFarmId ? fincas.filter(f=>f.id===activeFarmId) : fincas;
+const loteSelect = document.getElementById('loteSelect');
+loteSelect.innerHTML = '<option value="">— Selecciona estanque —</option>';
+let lotesMap = {};
+
+for (const finca of target) {
+  const ests = await getEstanques(finca.id);
+  for (const est of ests) {
+    const lote = await getActiveLoteByEstanque(est.id);
+    if (!lote || lote.estado !== 'activo') continue;
+    loteSelect.innerHTML += `<option value="${lote.id}">${est.nombre} — ${finca.nombre}</option>`;
+    lotesMap[lote.id] = { lote, est };
+  }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('lote')) loteSelect.value = urlParams.get('lote');
+loteSelect.addEventListener('change', loadLote);
+if (loteSelect.value) await loadLote();
+
+async function loadLote() {
+  const loteId = loteSelect.value;
+  if (!loteId || !lotesMap[loteId]) return;
+  const {lote, est} = lotesMap[loteId];
+  const dias = daysSince(lote.fecha_inicio);
+  const biomKg = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(1);
+  document.getElementById('loteInfo').innerHTML = `<span style="color:var(--color-cyan);font-weight:600">${est.nombre}</span> · Día ${dias} · Peso prom: <strong>${lote.peso_actual_g} g</strong> · Biomasa: <strong>${biomKg} kg</strong>`;
+  await loadHistory(loteId);
+}
+
+let currentResult = null;
+
+window.calcularMuestra = function() {
+  const raw = document.getElementById('pesosInput').value;
+  const weights = raw.split(/[\n,;]+/).map(s => parseFloat(s.trim())).filter(v => !isNaN(v) && v > 0);
+  const result = calculateBiometrySample(weights);
+  currentResult = result;
+
+  const panel = document.getElementById('resultPanel');
+  if (!result.valid && result.reason.includes('Mínimo')) {
+    panel.innerHTML = `<div class="alert warn"><span>⚠️</span><div>${result.reason}</div></div>`; return;
+  }
+
+  const cvColor = result.cv_pct <= 15 ? 'var(--color-ok)' : result.cv_pct <= 25 ? 'var(--color-warn)' : 'var(--color-critical)';
+  const cvStatus = result.cv_pct <= 15 ? 'ok' : result.cv_pct <= 25 ? 'warn' : 'critical';
+
+  panel.innerHTML = `
+    <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr);gap:var(--space-3);margin-bottom:var(--space-4)">
+      <div class="kpi-card"><div class="kpi-label">Peces muestreados</div><div class="kpi-value cyan">${result.n}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Peso promedio</div><div class="kpi-value">${result.mean_g} g</div></div>
+      <div class="kpi-card"><div class="kpi-label">Desv. Estándar</div><div class="kpi-value">${result.std_g} g</div></div>
+      <div class="kpi-card"><div class="kpi-label">CV%</div><div class="kpi-value" style="color:${cvColor}">${result.cv_pct}%</div></div>
+      <div class="kpi-card"><div class="kpi-label">Mín / Máx</div><div class="kpi-value" style="font-size:16px">${result.min_g} / ${result.max_g} g</div></div>
+      <div class="kpi-card"><div class="kpi-label">Validez</div><div>${result.valid ? '<span class="status-badge ok">✅ Válido</span>' : '<span class="status-badge warn">⚠️ Alta variabilidad</span>'}</div></div>
+    </div>
+    ${!result.valid ? `<div class="alert warn"><span>⚠️</span><div class="alert-body"><div class="alert-title">CV% Elevado</div><div>${result.reason}</div></div></div>` : ''}
+  `;
+
+  // Enable save
+  const savePanel = document.getElementById('savePanel');
+  savePanel.style.opacity = '1'; savePanel.style.pointerEvents = 'auto';
+  const saveAlert = document.getElementById('saveAlert');
+  if (result.valid) {
+    saveAlert.className = 'alert ok mb-4';
+    saveAlert.innerHTML = `<span>✅</span><div>Muestreo válido (CV% ≤ 25%). Se actualizará el peso promedio del lote y se recalculará el LMAx.</div>`;
+  } else {
+    saveAlert.className = 'alert warn mb-4';
+    saveAlert.innerHTML = `<span>⚠️</span><div>CV% = ${result.cv_pct}% — Se guardará con flag. El LMAx NO se actualizará automáticamente.</div>`;
+  }
+};
+
+window.guardarMuestra = async function() {
+  if (!currentResult) { showToast('Calcula el muestreo primero', 'warn'); return; }
+  const loteId = loteSelect.value;
+  if (!loteId) { showToast('Selecciona un estanque', 'warn'); return; }
+
+  const raw = document.getElementById('pesosInput').value;
+  const weights = raw.split(/[\n,;]+/).map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v)&&v>0);
+
+  const record = {
+    id: `bio-${Date.now()}`,
+    id_lote: loteId,
+    id_tenant: session.id_tenant || 'tenant-001',
+    fecha: new Date().toISOString().slice(0,10),
+    n: currentResult.n,
+    pesos_g: weights,
+    mean_g: currentResult.mean_g,
+    std_g: currentResult.std_g,
+    cv_pct: currentResult.cv_pct,
+    min_g: currentResult.min_g,
+    max_g: currentResult.max_g,
+    valid: currentResult.valid,
+    observaciones: document.getElementById('muestreoObs').value,
+    sync_status: 'pending'
+  };
+  await put('muestreos_bio', record);
+
+  // Update lote weight if valid
+  if (currentResult.valid) {
+    const {lote} = lotesMap[loteId];
+    lote.peso_actual_g = currentResult.mean_g;
+    await put('lotes', lote);
+    lotesMap[loteId].lote = lote;
+    showToast(`✅ Muestreo guardado. Peso promedio actualizado a ${currentResult.mean_g} g. LMAx recalculado.`, 'ok');
+  } else {
+    showToast(`⚠️ Muestreo guardado con flag de alta variabilidad (CV% = ${currentResult.cv_pct}%). LMAx no actualizado.`, 'warn');
+  }
+
+  document.getElementById('pesosInput').value = '';
+  document.getElementById('muestreoObs').value = '';
+  document.getElementById('resultPanel').innerHTML = '<div class="empty-state" style="padding:24px;text-align:center"><div style="font-size:32px">📏</div><p style="color:var(--text-muted);font-size:13px">Ingresa los pesos y presiona "Calcular"</p></div>';
+  const savePanel = document.getElementById('savePanel');
+  savePanel.style.opacity='0.4'; savePanel.style.pointerEvents='none';
+  currentResult = null;
+  await loadHistory(loteId);
+};
+
+async function loadHistory(loteId) {
+  const muestras = await getMuestreos(loteId);
+  const sorted = muestras.sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,8);
+  const tbl = document.getElementById('histTable');
+  if (!sorted.length) { tbl.innerHTML='<div class="empty-state" style="padding:24px"><p>Sin muestreos registrados</p></div>'; return; }
+  tbl.innerHTML = `<table><thead><tr><th>Fecha</th><th>N peces</th><th>Peso prom (g)</th><th>DE (g)</th><th>CV%</th><th>Validez</th></tr></thead><tbody>
+    ${sorted.map(m=>`<tr>
+      <td>${m.fecha}</td>
+      <td>${m.n}</td>
+      <td class="td-cyan">${m.mean_g}</td>
+      <td>${m.std_g}</td>
+      <td class="${m.cv_pct<=15?'td-ok':m.cv_pct<=25?'td-warn':'td-critical'}">${m.cv_pct}%</td>
+      <td>${m.valid?'<span class="status-badge ok">✅ Válido</span>':'<span class="status-badge warn">⚠️ Flagged</span>'}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+/* ============================================================
+   AQUASHELL — Design Tokens v3.0
+   Paleta extraída del Manual de Identidad Visual Corporativa
+   Tipografía: Montserrat (branding) + Inter (UI/datos)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* ── Paleta Institucional Aquashell ── */
+  --color-navy:       #1A335C;   /* Azul Marino — Principal */
+  --color-navy-dark:  #0F1F3D;   /* Azul Marino oscuro */
+  --color-navy-light: #2A4A80;   /* Azul Marino claro */
+  --color-cyan:       #45C4B0;   /* Cian/Turquesa — KPIs positivos */
+  --color-cyan-dark:  #2FA090;
+  --color-cyan-light: #6DD5C4;
+  --color-gold:       #C29B57;   /* Dorado/Ocre — alertas biológicas */
+  --color-gold-dark:  #A07A38;
+  --color-gold-light: #D9B87A;
+
+  /* ── Semáforos CTQ ── */
+  --color-ok:         #22C55E;   /* Verde — dentro de rango */
+  --color-warn:       #F59E0B;   /* Ámbar — zona de advertencia */
+  --color-critical:   #EF4444;   /* Rojo — fuera de límite / bloqueante */
+  --color-info:       #3B82F6;   /* Azul info */
+
+  /* ── Fondos (modo oscuro marino) ── */
+  --bg-app:           #0B1829;
+  --bg-sidebar:       #0F1F3D;
+  --bg-card:          #1A2E4A;
+  --bg-card-hover:    #1E3554;
+  --bg-input:         #162540;
+  --bg-overlay:       rgba(11,24,41,0.85);
+
+  /* ── Texto ── */
+  --text-primary:     #F0F4F8;
+  --text-secondary:   #94A3B8;
+  --text-muted:       #64748B;
+  --text-inverse:     #0B1829;
+  --text-navy:        #1A335C;
+
+  /* ── Bordes ── */
+  --border-color:     rgba(255,255,255,0.08);
+  --border-light:     rgba(255,255,255,0.04);
+  --border-cyan:      rgba(69,196,176,0.3);
+  --border-navy:      rgba(26,51,92,0.6);
+
+  /* ── Tipografía ── */
+  --font-brand:       'Montserrat', system-ui, sans-serif;
+  --font-ui:          'Inter', system-ui, sans-serif;
+
+  /* ── Tamaños texto ── */
+  --text-2xs:  10px;
+  --text-xs:   11px;
+  --text-sm:   13px;
+  --text-base: 14px;
+  --text-md:   15px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  30px;
+  --text-4xl:  36px;
+
+  /* ── Espaciado ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ── Radios ── */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  /* ── Sombras ── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,0.5);
+  --shadow-cyan: 0 4px 24px rgba(69,196,176,0.2);
+  --shadow-navy: 0 4px 24px rgba(26,51,92,0.5);
+
+  /* ── Transiciones ── */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* ── Sidebar ── */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+
+  /* ── Z-index ── */
+  --z-sidebar:  100;
+  --z-header:   90;
+  --z-modal:    200;
+  --z-toast:    300;
+}

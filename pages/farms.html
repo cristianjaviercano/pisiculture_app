@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestión de Fincas — Aquashell</title>
+  <link rel="icon" href="../img/aquashell.png"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">v3.0</span></div></div>
+    <div class="sidebar-user"><div class="user-avatar" id="sidebarUserAvatar">U</div><div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">PRINCIPAL</div>
+      <a href="dashboard.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="farms.html" class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Mis Fincas</a>
+      <div class="nav-section">OPERACIONES</div>
+      <a href="water-quality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua</a>
+      <a href="feeding.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg>Alimentación</a>
+      <a href="mortality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad</a>
+      <a href="biometry.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo</a>
+      <a href="inputs.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18"/></svg>Insumos</a>
+      <div class="nav-section">ANÁLISIS</div>
+      <a href="reports.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Informes</a>
+      <div class="nav-section">SISTEMA</div>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/></svg>Cerrar Sesión</a>
+    </nav>
+    <div class="sidebar-footer"><div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div><div class="page-title">🏡 Gestión de Fincas</div><div class="page-subtitle">Estanques y ciclos activos del tenant</div></div>
+    </header>
+
+    <div class="page-body" id="farmsBody">
+      <div class="empty-state"><div class="spinner" style="margin:0 auto"></div></div>
+    </div>
+  </main>
+</div>
+
+<!-- Sembrar Lote Modal -->
+<div class="modal-overlay" id="sembrarModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">🐟 Sembrar Nuevo Lote</span><button class="modal-close" onclick="document.getElementById('sembrarModal').classList.remove('open')">×</button></div>
+    <div class="modal-body">
+      <form id="sembrarForm" onsubmit="handleSembrar(event)">
+        <input type="hidden" id="sembrarEstId"/>
+        <div class="form-group"><label class="form-label">Especie</label>
+          <select class="form-select" id="sembrarEspecie">
+            <option value="tilapia_nilotica">Tilapia Nilótica</option>
+            <option value="cachama">Cachama Blanca</option>
+            <option value="trucha">Trucha Arcoíris</option>
+          </select>
+        </div>
+        <div class="grid-2" style="gap:var(--space-4)">
+          <div class="form-group" style="margin:0"><label class="form-label">Cantidad (peces)</label><input type="number" class="form-input" id="sembrarCount" min="1" placeholder="ej. 1000" required/></div>
+          <div class="form-group" style="margin:0"><label class="form-label">Peso inicial (g)</label><input type="number" class="form-input" id="sembrarPeso" min="0.5" step="0.5" placeholder="ej. 5" required/></div>
+        </div>
+        <div class="form-group mt-4" style="margin-top:var(--space-4)"><label class="form-label">Costo por alevino (COP)</label><input type="number" class="form-input" id="sembrarCosto" min="1" placeholder="ej. 350" value="350"/></div>
+        <div class="modal-footer" style="padding:0;margin-top:var(--space-4)">
+          <button type="button" class="btn btn-ghost" onclick="document.getElementById('sembrarModal').classList.remove('open')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">🌱 Sembrar Lote</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script type="module">
+import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getRetiroActivo, getLatestWaterReading, put } from '../js/db.js';
+import { ROLES, showToast, daysSince, formatDate } from '../js/auth.js';
+import { calculateLMax, calculateFCA, SPECIES_CONFIG, estimateHarvestDate } from '../js/biomassEngine.js';
+import { evaluateWaterReading } from '../js/waterQuality.js';
+
+const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
+if (!session) { window.location.href = '../index.html'; }
+if (!['gerente','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
+
+const role = session.rol;
+document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
+document.getElementById('sidebarUserName').textContent   = session.nombre;
+document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
+document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('mainSidebar').classList.toggle('open'));
+document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
+function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
+updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
+
+await openDB(); await seedDemoData();
+const fincas = await getFincas(session.id_tenant || 'tenant-001');
+const body   = document.getElementById('farmsBody');
+let html = '';
+
+for (const finca of fincas) {
+  const ests = await getEstanques(finca.id);
+  const rows = [];
+  for (const est of ests) {
+    const lote    = await getActiveLoteByEstanque(est.id);
+    const retiro  = lote ? await getRetiroActivo(lote.id) : null;
+    const reading = lote ? await getLatestWaterReading(lote.id) : null;
+    const waterEv = reading ? evaluateWaterReading(reading) : null;
+    let fca = null, harvest = null;
+    if (lote && lote.estado === 'activo') {
+      const bi = lote.count_inicial * lote.peso_inicial_g / 1000;
+      const bc = lote.count_actual  * lote.peso_actual_g  / 1000;
+      fca     = calculateFCA(lote.total_alimento_kg, bi, bc);
+      harvest = estimateHarvestDate(lote.peso_actual_g, daysSince(lote.fecha_inicio), lote.fecha_inicio, lote.especie);
+    }
+    rows.push({est, lote, retiro, waterEv, fca, harvest});
+  }
+
+  const activeCount = rows.filter(r=>r.lote?.estado==='activo').length;
+  html += `
+    <div class="card mb-6" style="margin-bottom:var(--space-6)">
+      <div class="card-header">
+        <div class="card-title">🏡 ${finca.nombre}</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:12px;color:var(--text-muted)">${finca.municipio}, ${finca.departamento} · ${finca.hectareas} ha</span>
+          <span class="status-badge info">${activeCount}/${rows.length} activos</span>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Estanque</th><th>QR</th><th>Estado</th><th>Especie</th><th>Día</th><th>Peces</th><th>Peso (g)</th><th>Biomasa</th><th>FCA</th><th>Agua</th><th>Cosecha en</th><th>Acciones</th></tr></thead>
+            <tbody>
+              ${rows.map(({est, lote, retiro, waterEv, fca, harvest}) => {
+                if (!lote || lote.estado !== 'activo') return `
+                  <tr>
+                    <td class="td-primary">${est.nombre}</td>
+                    <td style="font-size:10px;color:var(--text-muted)">${est.codigo_qr}</td>
+                    <td><span class="status-badge info">⬜ Vacío</span></td>
+                    <td colspan="8">—</td>
+                    <td><button class="btn btn-primary btn-sm" onclick="openSembrar('${est.id}')">🌱 Sembrar</button></td>
+                  </tr>`;
+                const dias = daysSince(lote.fecha_inicio);
+                const biomKg = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(1);
+                const sp = SPECIES_CONFIG[lote.especie] || SPECIES_CONFIG.tilapia_nilotica;
+                const ws = waterEv?.systemStatus || 'ok';
+                return `<tr>
+                  <td class="td-primary">${est.nombre}</td>
+                  <td style="font-size:10px;color:var(--color-cyan)">${est.codigo_qr}</td>
+                  <td>${retiro?'<span class="retiro-badge" style="font-size:10px">⛔ RETIRO</span>':'<span class="status-badge ok" style="font-size:10px">✅ Activo</span>'}</td>
+                  <td style="font-size:11px">${sp.name.split(' ')[0]}</td>
+                  <td class="td-cyan">${dias}</td>
+                  <td>${lote.count_actual.toLocaleString()}</td>
+                  <td class="td-cyan">${lote.peso_actual_g}</td>
+                  <td class="td-cyan">${biomKg} kg</td>
+                  <td class="${!fca?'':fca<=sp.fcr_optimal?'td-ok':fca<=sp.fcr_max_acceptable?'td-warn':'td-critical'}">${fca??'—'}</td>
+                  <td><span class="status-badge ${ws}" style="font-size:10px">${ws==='ok'?'✅':ws==='warn'?'⚠️':'🚨'}</span></td>
+                  <td class="${harvest?.days_remaining&&harvest.days_remaining<=14?'td-warn':'td-cyan'}">${harvest?.days_remaining!=null?harvest.days_remaining+'d':'—'}</td>
+                  <td style="white-space:nowrap;display:flex;gap:4px">
+                    <a href="reports.html?lote=${lote.id}" class="btn btn-ghost btn-sm" title="Informe">📊</a>
+                    ${!retiro?`<button class="btn btn-warn btn-sm" title="Cosechar" onclick="cosechar('${lote.id}','${est.nombre}')">🌾</button>`:''}
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+}
+
+body.innerHTML = html;
+
+window.openSembrar = function(estId) {
+  document.getElementById('sembrarEstId').value = estId;
+  document.getElementById('sembrarModal').classList.add('open');
+};
+
+window.handleSembrar = async function(e) {
+  e.preventDefault();
+  const estId    = document.getElementById('sembrarEstId').value;
+  const especie  = document.getElementById('sembrarEspecie').value;
+  const count    = parseInt(document.getElementById('sembrarCount').value);
+  const peso     = parseFloat(document.getElementById('sembrarPeso').value);
+  const costo    = parseFloat(document.getElementById('sembrarCosto').value);
+
+  const lote = {
+    id: `lote-${Date.now()}`, id_estanque: estId, id_tenant: session.id_tenant || 'tenant-001',
+    especie, estado: 'activo', fecha_inicio: new Date().toISOString().slice(0,10),
+    count_inicial: count, count_actual: count, peso_inicial_g: peso, peso_actual_g: peso,
+    total_alimento_kg: 0, unidad_costo_cop: costo, retiro_activo: false
+  };
+  await put('lotes', lote);
+  showToast(`✅ Lote sembrado: ${count} ${especie.replace('_',' ')} @ ${peso}g`, 'ok');
+  document.getElementById('sembrarModal').classList.remove('open');
+  setTimeout(() => window.location.reload(), 1000);
+};
+
+window.cosechar = async function(loteId, nombre) {
+  if (!confirm(`¿Confirmas la cosecha de ${nombre}? El lote pasará a estado "cosechado" y el estanque quedará vacío.`)) return;
+  const { getById } = await import('../js/db.js');
+  const lote = await getById('lotes', loteId);
+  if (!lote) return;
+  lote.estado = 'cosechado'; lote.fecha_cosecha = new Date().toISOString().slice(0,10);
+  await put('lotes', lote);
+  showToast(`✅ Cosecha registrada para ${nombre}`, 'ok');
+  setTimeout(() => window.location.reload(), 1000);
+};
+</script>
+</body>
+</html>

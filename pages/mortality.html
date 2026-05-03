@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mortalidad — Aquashell</title>
+  <link rel="icon" href="../img/aquashell.png"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">v3.0</span></div></div>
+    <div class="sidebar-user"><div class="user-avatar" id="sidebarUserAvatar">U</div><div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">PRINCIPAL</div>
+      <a href="dashboard.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <div class="nav-section">OPERACIONES</div>
+      <a href="water-quality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua</a>
+      <a href="feeding.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg>Alimentación</a>
+      <a href="mortality.html" class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad</a>
+      <a href="biometry.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo</a>
+      <a href="inputs.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18"/></svg>Insumos</a>
+      <div class="nav-section">ANÁLISIS</div>
+      <a href="reports.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Informes</a>
+      <div class="nav-section">SISTEMA</div>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/></svg>Cerrar Sesión</a>
+    </nav>
+    <div class="sidebar-footer"><div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div><div class="page-title">💀 Registro de Mortalidad</div><div class="page-subtitle">CU-AQUA-05 · Seguimiento de bajas</div></div>
+    </header>
+
+    <div class="page-body">
+      <div class="card mb-6" style="margin-bottom:var(--space-6)">
+        <div class="card-body">
+          <div class="grid-2" style="gap:var(--space-4);align-items:end">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Estanque / Lote <span class="form-required">*</span></label>
+              <select class="form-select" id="loteSelect"></select>
+            </div>
+            <div id="loteInfo" style="font-size:var(--text-sm);color:var(--text-muted)">Selecciona un estanque</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div id="statsPanel" class="kpi-grid mb-6" style="display:none;margin-bottom:var(--space-6)">
+        <div class="kpi-card"><div class="kpi-label">Peces actuales</div><div class="kpi-value cyan" id="statCount">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Mortalidad acum.</div><div class="kpi-value" id="statTotalDead">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">% Supervivencia</div><div class="kpi-value ok" id="statSurvival">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Estado hoy</div><div id="statStatus">—</div></div>
+      </div>
+
+      <div id="critAlert" class="alert critical" style="display:none;margin-bottom:var(--space-6)">
+        <span class="alert-icon">🚨</span>
+        <div class="alert-body"><div class="alert-title">MORTALIDAD CRÍTICA</div><div id="critMsg"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">📝 Registrar Bajas</div></div>
+        <div class="card-body">
+          <form id="mortForm" onsubmit="handleSubmit(event)">
+            <div class="grid-2" style="gap:var(--space-6)">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Número de peces muertos <span class="form-required">*</span></label>
+                <div class="input-unit">
+                  <input type="number" id="cantidad" class="form-input" min="1" step="1" placeholder="ej. 5" required oninput="evaluateMort()"/>
+                  <span class="unit-label">peces</span>
+                </div>
+                <div id="mortFeedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Causa probable <span class="form-required">*</span></label>
+                <select class="form-select" id="causa" required>
+                  <option value="">— Selecciona —</option>
+                  <option value="desconocida">Desconocida</option>
+                  <option value="calidad_agua">Calidad del agua (OD, Temp, pH)</option>
+                  <option value="enfermedad_bacteriana">Enfermedad bacteriana</option>
+                  <option value="enfermedad_viral">Enfermedad viral</option>
+                  <option value="parasitosis">Parasitosis</option>
+                  <option value="trauma_manejo">Trauma por manejo</option>
+                  <option value="competencia_alimento">Competencia por alimento</option>
+                  <option value="depredacion">Depredación</option>
+                  <option value="exceso_densidad">Exceso de densidad</option>
+                  <option value="otro">Otro (especificar en notas)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group mt-4" style="margin-top:var(--space-4)">
+              <label class="form-label">Estado de los peces encontrados</label>
+              <select class="form-select" id="estado_peces">
+                <option value="fresco">Fresco (menos de 2h)</option>
+                <option value="descompuesto">Descompuesto</option>
+                <option value="lesiones_externas">Con lesiones externas visibles</option>
+                <option value="sin_lesiones">Sin lesiones aparentes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Observaciones / síntomas</label>
+              <textarea class="form-textarea" id="obs" placeholder="Describe síntomas, comportamiento previo, condición del agua al momento..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger btn-lg" id="submitBtn" disabled>💀 Registrar Mortalidad</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Historial -->
+      <div class="card mt-6" style="margin-top:var(--space-6)">
+        <div class="card-header"><div class="card-title">📋 Historial reciente</div></div>
+        <div class="card-body" style="padding:0"><div class="table-wrap" id="histTable"><div class="empty-state" style="padding:24px"><p>Selecciona un estanque para ver el historial</p></div></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="toastContainer"></div>
+
+<script type="module">
+import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getRegistrosMort, put } from '../js/db.js';
+import { ROLES, showToast, daysSince, formatDate } from '../js/auth.js';
+import { evaluateMortality } from '../js/biomassEngine.js';
+
+const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
+if (!session) { window.location.href = '../index.html'; }
+const activeFarmId = sessionStorage.getItem('aq_active_farm');
+const role = session.rol;
+
+document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
+document.getElementById('sidebarUserName').textContent   = session.nombre;
+document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
+document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('mainSidebar').classList.toggle('open'));
+document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
+function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
+updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
+
+await openDB(); await seedDemoData();
+
+const fincas = await getFincas(session.id_tenant || 'tenant-001');
+const target = activeFarmId ? fincas.filter(f=>f.id===activeFarmId) : fincas;
+const loteSelect = document.getElementById('loteSelect');
+loteSelect.innerHTML = '<option value="">— Selecciona estanque —</option>';
+let lotesMap = {};
+
+for (const finca of target) {
+  const ests = await getEstanques(finca.id);
+  for (const est of ests) {
+    const lote = await getActiveLoteByEstanque(est.id);
+    if (!lote || lote.estado !== 'activo') continue;
+    loteSelect.innerHTML += `<option value="${lote.id}">${est.nombre} — ${finca.nombre}</option>`;
+    lotesMap[lote.id] = { lote, est };
+  }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('lote')) loteSelect.value = urlParams.get('lote');
+loteSelect.addEventListener('change', loadLote);
+await loadLote();
+
+async function loadLote() {
+  const loteId = loteSelect.value;
+  const info = document.getElementById('loteInfo');
+  const statsPanel = document.getElementById('statsPanel');
+  if (!loteId || !lotesMap[loteId]) {
+    info.textContent='Selecciona un estanque'; statsPanel.style.display='none';
+    document.getElementById('submitBtn').disabled=true; return;
+  }
+  const {lote, est} = lotesMap[loteId];
+  const dias = daysSince(lote.fecha_inicio);
+  info.innerHTML = `<span style="color:var(--color-cyan);font-weight:600">${est.nombre}</span> · Día ${dias} · ${lote.count_actual.toLocaleString()} peces`;
+
+  const pctDead = ((lote.count_inicial - lote.count_actual) / lote.count_inicial * 100).toFixed(1);
+  const pctSurv = (100 - parseFloat(pctDead)).toFixed(1);
+  document.getElementById('statCount').textContent    = lote.count_actual.toLocaleString();
+  document.getElementById('statTotalDead').textContent = (lote.count_inicial - lote.count_actual).toLocaleString();
+  document.getElementById('statSurvival').textContent = pctSurv + '%';
+  document.getElementById('statSurvival').className   = 'kpi-value ' + (parseFloat(pctSurv) >= 95 ? 'ok' : 'warn');
+  document.getElementById('statStatus').innerHTML     = `<span class="status-badge ${parseFloat(pctSurv) >= 95 ? 'ok' : 'warn'}">${parseFloat(pctSurv) >= 95 ? '✅ Normal' : '⚠️ Atención'}</span>`;
+  statsPanel.style.display='grid';
+  document.getElementById('submitBtn').disabled=false;
+
+  await loadHistory(loteId);
+}
+
+window.evaluateMort = function() {
+  const loteId = loteSelect.value;
+  if (!loteId || !lotesMap[loteId]) return;
+  const cant = parseInt(document.getElementById('cantidad').value);
+  if (isNaN(cant) || cant <= 0) return;
+  const {lote} = lotesMap[loteId];
+  const result = evaluateMortality(cant, lote.count_actual);
+  const fb = document.getElementById('mortFeedback');
+  const critDiv = document.getElementById('critAlert');
+  const colors = {ok:'var(--color-ok)',warn:'var(--color-warn)',critical:'var(--color-critical)'};
+  fb.textContent = (result.status==='ok'?'✅ ':result.status==='warn'?'⚠️ ':'🚨 ') + result.message;
+  fb.style.color = colors[result.status];
+  if (result.status === 'critical') {
+    critDiv.style.display='flex';
+    document.getElementById('critMsg').textContent = result.message + ' Registra el evento, notifica al Coordinador y revisa la calidad del agua de inmediato.';
+  } else { critDiv.style.display='none'; }
+};
+
+async function loadHistory(loteId) {
+  const morts = await getRegistrosMort(loteId);
+  const sorted = morts.sort((a,b) => b.fecha.localeCompare(a.fecha)).slice(0,10);
+  const tbl = document.getElementById('histTable');
+  if (!sorted.length) { tbl.innerHTML='<div class="empty-state" style="padding:24px"><div class="empty-state-icon">✅</div><p>Sin mortalidades registradas</p></div>'; return; }
+  tbl.innerHTML = `<table><thead><tr><th>Fecha</th><th>Cantidad</th><th>Causa</th><th>Estado peces</th></tr></thead><tbody>
+    ${sorted.map(m=>`<tr><td>${m.fecha}</td><td class="td-critical">${m.cantidad}</td><td style="font-size:12px">${m.causa||'—'}</td><td style="font-size:12px">${m.estado_peces||'—'}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+window.handleSubmit = async function(e) {
+  e.preventDefault();
+  const loteId = loteSelect.value;
+  if (!loteId) { showToast('Selecciona un estanque', 'warn'); return; }
+  const cant  = parseInt(document.getElementById('cantidad').value);
+  const causa = document.getElementById('causa').value;
+  if (!causa) { showToast('Selecciona una causa', 'warn'); return; }
+
+  const {lote} = lotesMap[loteId];
+  const result = evaluateMortality(cant, lote.count_actual);
+
+  const record = {
+    id: `mort-${Date.now()}`,
+    id_lote: loteId,
+    id_tenant: session.id_tenant || 'tenant-001',
+    fecha: new Date().toISOString().slice(0,10),
+    cantidad: cant,
+    causa,
+    estado_peces: document.getElementById('estado_peces').value,
+    observaciones: document.getElementById('obs').value,
+    sync_status: 'pending'
+  };
+  await put('registros_mort', record);
+
+  // Update lote
+  lote.count_actual = Math.max(0, lote.count_actual - cant);
+  await put('lotes', lote);
+  lotesMap[loteId].lote = lote;
+
+  const toastType = result.status === 'critical' ? 'critical' : result.status === 'warn' ? 'warn' : 'ok';
+  showToast(`${cant} peces registrados. ${result.message}`, toastType);
+  e.target.reset();
+  document.getElementById('mortFeedback').textContent='';
+  document.getElementById('critAlert').style.display='none';
+  await loadLote();
+};
+</script>
+</body>
+</html>

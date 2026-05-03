@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insumos Sanitarios — Aquashell</title>
+  <link rel="icon" href="../img/aquashell.png"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">v3.0</span></div></div>
+    <div class="sidebar-user"><div class="user-avatar" id="sidebarUserAvatar">U</div><div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">PRINCIPAL</div>
+      <a href="dashboard.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <div class="nav-section">OPERACIONES</div>
+      <a href="water-quality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua</a>
+      <a href="feeding.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg>Alimentación</a>
+      <a href="mortality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad</a>
+      <a href="biometry.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo</a>
+      <a href="inputs.html" class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18"/></svg>Insumos Sanitarios</a>
+      <div class="nav-section">ANÁLISIS</div>
+      <a href="reports.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Informes</a>
+      <div class="nav-section">SISTEMA</div>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/></svg>Cerrar Sesión</a>
+    </nav>
+    <div class="sidebar-footer"><div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div><div class="page-title">💊 Insumos Sanitarios</div><div class="page-subtitle">CU-AQUA-08 · Trazabilidad ICA y bloqueo de cosecha</div></div>
+    </header>
+
+    <div class="page-body">
+      <div class="card mb-6" style="margin-bottom:var(--space-6)">
+        <div class="card-body">
+          <div class="grid-2" style="gap:var(--space-4);align-items:end">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Lote destino <span class="form-required">*</span></label>
+              <select class="form-select" id="loteSelect"></select>
+            </div>
+            <div id="loteInfo" style="font-size:13px;color:var(--text-muted)">Selecciona un lote</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Retiro activo -->
+      <div id="retiroPanel" style="display:none;margin-bottom:var(--space-6)">
+        <div class="alert bloqueado">
+          <span class="alert-icon">⛔</span>
+          <div class="alert-body">
+            <div class="alert-title">COSECHA BLOQUEADA — Período de retiro activo</div>
+            <div id="retiroDetail">Período de retiro activo hasta —</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:var(--space-6)">
+        <!-- Formulario -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">📝 Registrar Aplicación</div></div>
+          <div class="card-body">
+            <form id="inputForm" onsubmit="handleSubmit(event)">
+              <div class="form-group">
+                <label class="form-label">Insumo del catálogo <span class="form-required">*</span></label>
+                <select class="form-select" id="insumoSelect" required onchange="loadInsumoInfo()">
+                  <option value="">— Selecciona insumo —</option>
+                </select>
+              </div>
+
+              <!-- Ficha técnica del insumo -->
+              <div id="insumoFicha" class="card mb-4" style="display:none;background:var(--bg-input);border:1px solid var(--border-cyan);margin-bottom:var(--space-4)">
+                <div class="card-body" style="padding:var(--space-4)">
+                  <div style="font-size:11px;font-weight:700;color:var(--color-cyan);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">📋 Ficha Técnica</div>
+                  <div id="fichaContent" style="font-size:12px;color:var(--text-secondary);line-height:1.8"></div>
+                </div>
+              </div>
+
+              <div class="grid-2" style="gap:var(--space-4)">
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Cantidad aplicada <span class="form-required">*</span></label>
+                  <div class="input-unit">
+                    <input type="number" id="cantidad" class="form-input" min="0.01" step="0.01" placeholder="ej. 500" required/>
+                    <span class="unit-label" id="unidadLabel">—</span>
+                  </div>
+                </div>
+                <div class="form-group" style="margin:0">
+                  <label class="form-label">Motivo <span class="form-required">*</span></label>
+                  <select class="form-select" id="motivo" required>
+                    <option value="">— Selecciona —</option>
+                    <option value="Profilaxis">Profilaxis</option>
+                    <option value="Tratamiento curativo">Tratamiento curativo</option>
+                    <option value="Acondicionamiento de agua">Acondicionamiento de agua</option>
+                    <option value="Estimulación inmunológica">Estimulación inmunológica</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Dosis descrita</label>
+                <input type="text" class="form-input" id="dosis" placeholder="ej. 10 mg/kg pv/día por 5 días"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Notas adicionales</label>
+                <textarea class="form-textarea" id="notas" placeholder="Síntomas observados, respuesta al tratamiento..."></textarea>
+              </div>
+
+              <div id="retiroWarning" class="alert warn" style="display:none;margin-bottom:var(--space-4)">
+                <span>⚠️</span>
+                <div class="alert-body"><div class="alert-title">Período de retiro</div><div id="retiroWarnMsg"></div></div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">💊 Registrar Aplicación</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Historial -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">📋 Aplicaciones del lote</div></div>
+          <div class="card-body" style="padding:0"><div id="histTable"><div class="empty-state" style="padding:24px"><p>Selecciona un lote</p></div></div></div>
+        </div>
+      </div>
+
+      <!-- Catálogo -->
+      <div class="card mt-6" style="margin-top:var(--space-6)">
+        <div class="card-header"><div class="card-title">📚 Catálogo de Insumos Disponibles</div></div>
+        <div class="card-body" style="padding:0"><div class="table-wrap" id="catalogTable"></div></div>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="toastContainer"></div>
+
+<script type="module">
+import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getRetiroActivo, getAplicaciones, getInsumos, put } from '../js/db.js';
+import { ROLES, showToast, daysSince } from '../js/auth.js';
+
+const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
+if (!session) { window.location.href = '../index.html'; }
+if (!['coordinador','gerente','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
+
+const activeFarmId = sessionStorage.getItem('aq_active_farm');
+const role = session.rol;
+document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
+document.getElementById('sidebarUserName').textContent   = session.nombre;
+document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
+document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('mainSidebar').classList.toggle('open'));
+document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
+function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
+updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
+
+await openDB(); await seedDemoData();
+
+const insumos = await getInsumos();
+const insumoSelect = document.getElementById('insumoSelect');
+const typeLabels = { medicamento:'💊 Medicamento', acondicionador:'🪨 Acondicionador', probiotico:'🦠 Probiótico', otro:'📦 Otro' };
+
+// Group by type
+const byType = {};
+for (const ins of insumos) {
+  if (!byType[ins.tipo]) byType[ins.tipo] = [];
+  byType[ins.tipo].push(ins);
+}
+for (const [tipo, list] of Object.entries(byType)) {
+  const grp = document.createElement('optgroup');
+  grp.label = typeLabels[tipo] || tipo;
+  list.forEach(ins => {
+    grp.innerHTML += `<option value="${ins.id}">${ins.nombre_producto} ${ins.registro_ica ? '✅' : '⚠️'}</option>`;
+  });
+  insumoSelect.appendChild(grp);
+}
+
+// Catalog table
+const catalogTable = document.getElementById('catalogTable');
+catalogTable.innerHTML = `<table><thead><tr><th>Insumo</th><th>Principio Activo</th><th>Tipo</th><th>Reg. ICA</th><th>Retiro (días)</th><th>Unidad</th></tr></thead><tbody>
+${insumos.map(i=>`<tr>
+  <td class="td-primary">${i.nombre_producto}</td>
+  <td style="font-size:12px">${i.principio_activo}</td>
+  <td><span class="status-badge info" style="font-size:10px">${i.tipo}</span></td>
+  <td>${i.registro_ica ? `<span class="status-badge ok" style="font-size:10px">✅ ${i.registro_ica}</span>` : '<span class="status-badge warn" style="font-size:10px">⚠️ Sin registro</span>'}</td>
+  <td class="${i.periodo_retiro_dias>0?'td-critical':''}">${i.periodo_retiro_dias>0?i.periodo_retiro_dias+' días':'—'}</td>
+  <td style="font-size:12px">${i.unidad_medida}</td>
+</tr>`).join('')}
+</tbody></table>`;
+
+// Lotes
+const fincas = await getFincas(session.id_tenant || 'tenant-001');
+const target = activeFarmId ? fincas.filter(f=>f.id===activeFarmId) : fincas;
+const loteSelect = document.getElementById('loteSelect');
+loteSelect.innerHTML = '<option value="">— Selecciona lote —</option>';
+let lotesMap = {};
+
+for (const finca of target) {
+  const ests = await getEstanques(finca.id);
+  for (const est of ests) {
+    const lote = await getActiveLoteByEstanque(est.id);
+    if (!lote || lote.estado !== 'activo') continue;
+    loteSelect.innerHTML += `<option value="${lote.id}">${est.nombre} — ${finca.nombre}</option>`;
+    lotesMap[lote.id] = { lote, est };
+  }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('lote')) loteSelect.value = urlParams.get('lote');
+loteSelect.addEventListener('change', loadLote);
+if (loteSelect.value) await loadLote();
+
+async function loadLote() {
+  const loteId = loteSelect.value;
+  if (!loteId || !lotesMap[loteId]) return;
+  const {lote, est} = lotesMap[loteId];
+  document.getElementById('loteInfo').innerHTML = `<span style="color:var(--color-cyan);font-weight:600">${est.nombre}</span> · ${lote.count_actual} peces · ${(lote.count_actual*lote.peso_actual_g/1000).toFixed(1)} kg`;
+
+  const retiro = await getRetiroActivo(loteId);
+  if (retiro) {
+    document.getElementById('retiroPanel').style.display='block';
+    const dias = Math.ceil((new Date(retiro.fecha_fin_retiro)-new Date())/86400000);
+    document.getElementById('retiroDetail').textContent = `Retiro activo hasta: ${retiro.fecha_fin_retiro} (${dias} días restantes). La cosecha está bloqueada.`;
+  } else {
+    document.getElementById('retiroPanel').style.display='none';
+  }
+
+  await loadHistory(loteId);
+}
+
+window.loadInsumoInfo = function() {
+  const insId = insumoSelect.value;
+  const ficha = document.getElementById('insumoFicha');
+  const fichaContent = document.getElementById('fichaContent');
+  const retiroWarn = document.getElementById('retiroWarning');
+  document.getElementById('unidadLabel').textContent = '—';
+  if (!insId) { ficha.style.display='none'; retiroWarn.style.display='none'; return; }
+  const ins = insumos.find(i=>i.id===insId);
+  if (!ins) return;
+  document.getElementById('unidadLabel').textContent = ins.unidad_medida;
+  fichaContent.innerHTML = `
+    <b>Principio activo:</b> ${ins.principio_activo}<br>
+    <b>Registro ICA:</b> ${ins.registro_ica || '⚠️ Sin registro'}<br>
+    <b>Dosis referencia:</b> ${ins.dosis_referencia || '—'}<br>
+    <b>Período de retiro:</b> ${ins.periodo_retiro_dias>0?ins.periodo_retiro_dias+' días':'Sin restricción'}
+  `;
+  ficha.style.display='block';
+  if (ins.periodo_retiro_dias > 0) {
+    retiroWarn.style.display='flex';
+    const fechaFin = new Date(); fechaFin.setDate(fechaFin.getDate() + ins.periodo_retiro_dias);
+    document.getElementById('retiroWarnMsg').textContent = `⚠️ Este insumo tiene un período de retiro de ${ins.periodo_retiro_dias} días. La cosecha quedará bloqueada hasta el ${fechaFin.toISOString().slice(0,10)}.`;
+  } else {
+    retiroWarn.style.display='none';
+  }
+};
+
+async function loadHistory(loteId) {
+  const apps = await getAplicaciones(loteId);
+  const sorted = apps.sort((a,b)=>b.fecha_aplicacion?.localeCompare(a.fecha_aplicacion||'')).slice(0,10);
+  const tbl = document.getElementById('histTable');
+  if (!sorted.length) { tbl.innerHTML='<div class="empty-state" style="padding:24px"><p>Sin aplicaciones registradas</p></div>'; return; }
+  const hoy = new Date().toISOString().slice(0,10);
+  tbl.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Insumo</th><th>Motivo</th><th>Cant.</th><th>Retiro hasta</th></tr></thead><tbody>
+    ${sorted.map(a => {
+      const ins = insumos.find(i=>i.id===a.id_insumo);
+      const enRetiro = a.fecha_fin_retiro && a.fecha_fin_retiro >= hoy;
+      return `<tr>
+        <td class="td-primary" style="font-size:12px">${ins?.nombre_producto || '—'}</td>
+        <td style="font-size:12px">${a.motivo_aplicacion||'—'}</td>
+        <td>${a.cantidad_aplicada} ${ins?.unidad_medida||''}</td>
+        <td>${a.fecha_fin_retiro ? (enRetiro ? `<span class="retiro-badge" style="font-size:10px">⛔ ${a.fecha_fin_retiro}</span>` : a.fecha_fin_retiro) : '—'}</td>
+      </tr>`;
+    }).join('')}
+  </tbody></table></div>`;
+}
+
+window.handleSubmit = async function(e) {
+  e.preventDefault();
+  const loteId   = loteSelect.value;
+  const insId    = insumoSelect.value;
+  const cantidad = parseFloat(document.getElementById('cantidad').value);
+  const motivo   = document.getElementById('motivo').value;
+  if (!loteId || !insId || isNaN(cantidad) || cantidad <= 0 || !motivo) { showToast('Completa todos los campos obligatorios', 'warn'); return; }
+
+  const ins = insumos.find(i=>i.id===insId);
+  const hoy = new Date().toISOString().slice(0,10);
+  const fechaFin = ins.periodo_retiro_dias > 0 ?
+    new Date(Date.now() + ins.periodo_retiro_dias * 86400000).toISOString().slice(0,10) : null;
+
+  const record = {
+    id: `aplic-${Date.now()}`,
+    id_lote: loteId,
+    id_insumo: insId,
+    id_tenant: session.id_tenant || 'tenant-001',
+    cantidad_aplicada: cantidad,
+    unidad: ins.unidad_medida,
+    dosis_descrita: document.getElementById('dosis').value,
+    motivo_aplicacion: motivo,
+    fecha_aplicacion: hoy,
+    fecha_fin_retiro: fechaFin,
+    notas: document.getElementById('notas').value,
+    sync_status: 'pending'
+  };
+  await put('aplic_insumos', record);
+
+  const msg = fechaFin
+    ? `✅ Aplicación registrada. ⛔ La cosecha está bloqueada hasta el ${fechaFin}.`
+    : '✅ Aplicación registrada. Sin período de retiro.';
+  showToast(msg, fechaFin ? 'warn' : 'ok');
+  e.target.reset();
+  document.getElementById('insumoFicha').style.display='none';
+  document.getElementById('retiroWarning').style.display='none';
+  document.getElementById('unidadLabel').textContent='—';
+  await loadLote();
+};
+</script>
+</body>
+</html>

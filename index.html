@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Aquashell — Sistema de Control Operativo para Acuicultura. Login seguro multi-tenant."/>
+  <title>Aquashell — Control Acuícola</title>
+  <link rel="icon" href="img/aquashell.png"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg-app); overflow: hidden; }
+    .login-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(26,51,92,0.6) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(69,196,176,0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 60% 80%, rgba(194,155,87,0.05) 0%, transparent 50%);
+    }
+    .login-wrap { position: relative; z-index: 1; width: 100%; max-width: 440px; padding: var(--space-6); }
+    .login-logo { text-align: center; margin-bottom: var(--space-8); }
+    .login-logo img { width: 72px; height: 72px; object-fit: contain; margin: 0 auto var(--space-4); display: block; filter: drop-shadow(0 4px 24px rgba(69,196,176,0.4)); }
+    .login-logo-title { font-family: var(--font-brand); font-weight: 800; font-size: var(--text-3xl); color: var(--color-cyan); letter-spacing: 1px; }
+    .login-logo-sub { font-size: var(--text-sm); color: var(--text-muted); margin-top: 4px; letter-spacing: 2px; text-transform: uppercase; }
+    .login-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: var(--space-8); box-shadow: var(--shadow-lg); }
+    .login-title { font-family: var(--font-brand); font-weight: 700; font-size: var(--text-xl); color: var(--text-primary); margin-bottom: var(--space-2); }
+    .login-sub { font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-6); }
+
+    /* Rol selector */
+    .role-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-6); background: var(--bg-input); border-radius: var(--radius-md); padding: 4px; }
+    .role-tab { flex: 1; padding: 8px 4px; border: none; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); font-size: var(--text-xs); font-weight: 600; cursor: pointer; transition: all var(--transition-fast); text-align: center; }
+    .role-tab:hover { color: var(--text-primary); }
+    .role-tab.active { background: var(--color-navy-light); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+
+    /* Quick access */
+    .quick-users { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-5); }
+    .quick-user { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); }
+    .quick-user:hover { border-color: var(--border-cyan); background: var(--bg-card-hover); }
+    .quick-user.selected { border-color: var(--color-cyan); background: rgba(69,196,176,0.06); }
+    .qu-avatar { width: 34px; height: 34px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-sm); flex-shrink: 0; }
+    .qu-info { flex: 1; min-width: 0; }
+    .qu-name { font-size: var(--text-sm); font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .qu-role { font-size: var(--text-xs); color: var(--text-muted); }
+    .qu-email { font-size: var(--text-2xs); color: var(--text-muted); margin-top: 2px; }
+
+    .divider { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-4) 0; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+    .divider span { font-size: var(--text-xs); color: var(--text-muted); white-space: nowrap; }
+
+    .login-footer { text-align: center; margin-top: var(--space-6); font-size: var(--text-xs); color: var(--text-muted); }
+    .login-footer strong { color: var(--color-cyan); }
+
+    /* Finca selector (post login) */
+    #farmSelector { display: none; }
+    #farmSelector.visible { display: block; }
+    .farm-list { display: flex; flex-direction: column; gap: var(--space-2); margin: var(--space-4) 0; }
+    .farm-item { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); }
+    .farm-item:hover { border-color: var(--border-cyan); }
+    .farm-name { font-weight: 700; font-size: var(--text-sm); color: var(--text-primary); }
+    .farm-meta { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="login-bg"></div>
+
+  <div class="login-wrap">
+    <div class="login-logo">
+      <img src="img/aquashell.png" alt="Aquashell"/>
+      <div class="login-logo-title">Aquashell</div>
+      <div class="login-logo-sub">Control Acuícola v3.0</div>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div class="login-card" id="loginPanel">
+      <div class="login-title">Ingresa al sistema</div>
+      <div class="login-sub">Selecciona tu perfil de acceso rápido</div>
+
+      <!-- Role tabs -->
+      <div class="role-tabs" id="roleTabs">
+        <button class="role-tab active" data-role="operario"    onclick="filterByRole('operario')">🌾 Operario</button>
+        <button class="role-tab"        data-role="coordinador" onclick="filterByRole('coordinador')">🎯 Coord.</button>
+        <button class="role-tab"        data-role="gerente"     onclick="filterByRole('gerente')">📊 Gerente</button>
+        <button class="role-tab"        data-role="otros"       onclick="filterByRole('otros')">➕ Otros</button>
+      </div>
+
+      <!-- Quick user list -->
+      <div class="quick-users" id="quickUsers"></div>
+
+      <div class="divider"><span>o ingresa manualmente</span></div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input type="email" id="email" class="form-input" placeholder="usuario@aquashell.co" autocomplete="email" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Contraseña <span class="form-required">*</span></label>
+          <input type="password" id="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required/>
+        </div>
+        <div id="loginError" class="alert critical" style="display:none;margin-bottom:var(--space-4)">
+          <span class="alert-icon">🚨</span>
+          <div class="alert-body"><div id="loginErrorMsg">Credenciales incorrectas</div></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="submitBtn">
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <div class="login-footer">Demo · <strong>Piscícola Los Laureles S.A.S.</strong> · Tenant-001</div>
+    </div>
+
+    <!-- FARM SELECTOR PANEL -->
+    <div class="login-card" id="farmSelector">
+      <div class="login-title" id="farmTitle">Selecciona tu finca</div>
+      <div class="login-sub" id="farmSub">Tienes acceso a las siguientes unidades productivas</div>
+      <div class="farm-list" id="farmList"></div>
+      <button class="btn btn-ghost btn-full" onclick="backToLogin()" style="margin-top:var(--space-3)">← Cambiar usuario</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { openDB, seedDemoData, getAll, getFincas, setSession, setActiveFarm, clearSession } from './js/db.js';
+    import { ROLES, login } from './js/auth.js';
+
+    clearSession();
+    let allUsers = [];
+    let currentUser = null;
+
+    await openDB();
+    await seedDemoData();
+    allUsers = await getAll('usuarios');
+
+    window.filterByRole = function(role) {
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.toggle('active', t.dataset.role === role));
+      renderQuickUsers(role);
+    };
+
+    function renderQuickUsers(role) {
+      const container = document.getElementById('quickUsers');
+      const roleColors = { operario: '#22C55E', coordinador: '#F59E0B', gerente: '#45C4B0', asesor: '#818CF8', superadmin: '#EF4444' };
+      const filtered = role === 'otros'
+        ? allUsers.filter(u => u.rol === 'asesor' || u.rol === 'superadmin')
+        : allUsers.filter(u => u.rol === role);
+
+      container.innerHTML = filtered.map(u => `
+        <div class="quick-user" onclick="selectUser('${u.id}')" id="qu-${u.id}">
+          <div class="qu-avatar" style="background:${roleColors[u.rol]}22;color:${roleColors[u.rol]}">${u.nombre[0]}</div>
+          <div class="qu-info">
+            <div class="qu-name">${u.nombre}</div>
+            <div class="qu-role">${ROLES[u.rol]?.label || u.rol}</div>
+            <div class="qu-email">${u.email}</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      `).join('') || '<div class="text-muted" style="text-align:center;padding:12px;font-size:13px">Sin usuarios para este rol</div>';
+    }
+
+    window.selectUser = function(userId) {
+      const user = allUsers.find(u => u.id === userId);
+      if (!user) return;
+      document.querySelectorAll('.quick-user').forEach(el => el.classList.remove('selected'));
+      document.getElementById(`qu-${userId}`)?.classList.add('selected');
+      document.getElementById('email').value    = user.email;
+      document.getElementById('password').value = user.password;
+    };
+
+    window.handleLogin = async function(e) {
+      e.preventDefault();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn      = document.getElementById('submitBtn');
+      const errDiv   = document.getElementById('loginError');
+      const errMsg   = document.getElementById('loginErrorMsg');
+
+      btn.innerHTML = '<span class="spinner"></span> Ingresando...';
+      btn.disabled  = true;
+      errDiv.style.display = 'none';
+
+      try {
+        const user = await login(email, password);
+        currentUser = user;
+        setSession(user);
+
+        // Si es Operario con finca asignada → directo al dashboard
+        if (user.rol === 'operario' && user.id_finca) {
+          setActiveFarm(user.id_finca);
+          window.location.href = 'pages/dashboard.html';
+          return;
+        }
+
+        // Gerente/Coordinador/Asesor → mostrar selector de finca
+        const fincas = await getFincas(user.id_tenant);
+        if (fincas.length === 1) {
+          setActiveFarm(fincas[0].id);
+          window.location.href = 'pages/dashboard.html';
+          return;
+        }
+
+        renderFarmSelector(user, fincas);
+      } catch (err) {
+        errMsg.textContent = err.message || 'Error de autenticación';
+        errDiv.style.display = 'flex';
+        btn.innerHTML = 'Iniciar Sesión';
+        btn.disabled  = false;
+      }
+    };
+
+    function renderFarmSelector(user, fincas) {
+      document.getElementById('loginPanel').style.display = 'none';
+      const sel = document.getElementById('farmSelector');
+      sel.classList.add('visible');
+      document.getElementById('farmTitle').textContent = `Hola, ${user.nombre.split(' ')[0]} 👋`;
+      document.getElementById('farmSub').textContent   = 'Selecciona la finca de trabajo para esta sesión';
+
+      const list = document.getElementById('farmList');
+      list.innerHTML = fincas.map(f => `
+        <div class="farm-item" onclick="selectFarm('${f.id}')">
+          <div>
+            <div class="farm-name">🏡 ${f.nombre}</div>
+            <div class="farm-meta">${f.municipio}, ${f.departamento} · ${f.hectareas} ha</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-cyan)"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      `).join('');
+    }
+
+    window.selectFarm = function(fincaId) {
+      setActiveFarm(fincaId);
+      window.location.href = 'pages/dashboard.html';
+    };
+
+    window.backToLogin = function() {
+      document.getElementById('loginPanel').style.display = 'block';
+      document.getElementById('farmSelector').classList.remove('visible');
+    };
+
+    // Init: show operario by default
+    filterByRole('operario');
+  </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Informes & KPIs — Aquashell</title>
+  <link rel="icon" href="../img/aquashell.png"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">v3.0</span></div></div>
+    <div class="sidebar-user"><div class="user-avatar" id="sidebarUserAvatar">U</div><div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">PRINCIPAL</div>
+      <a href="dashboard.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <div class="nav-section">OPERACIONES</div>
+      <a href="water-quality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua</a>
+      <a href="feeding.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg>Alimentación</a>
+      <a href="mortality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad</a>
+      <a href="biometry.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo</a>
+      <a href="inputs.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18"/></svg>Insumos</a>
+      <div class="nav-section">ANÁLISIS</div>
+      <a href="reports.html" class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Informes & KPIs</a>
+      <div class="nav-section">SISTEMA</div>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/></svg>Cerrar Sesión</a>
+    </nav>
+    <div class="sidebar-footer"><div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div></div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div><div class="page-title">📊 Informes & KPIs</div><div class="page-subtitle">Análisis de ciclos por finca y estanque</div></div>
+    </header>
+
+    <div class="page-body">
+      <!-- Selector -->
+      <div class="card mb-6" style="margin-bottom:var(--space-6)">
+        <div class="card-body">
+          <div class="grid-2" style="gap:var(--space-4);align-items:end">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Estanque / Lote</label>
+              <select class="form-select" id="loteSelect"></select>
+            </div>
+            <div><button class="btn btn-primary" onclick="generarInforme()">📊 Generar Informe</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="reportBody"></div>
+    </div>
+  </main>
+</div>
+<div id="toastContainer"></div>
+
+<script type="module">
+import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getRegistrosAgua, getRegistrosAlim, getRegistrosMort, getMuestreos } from '../js/db.js';
+import { ROLES, showToast, daysSince, formatDate, formatCOP, formatNum } from '../js/auth.js';
+import { calculateFCA, calculateLMax, evaluateMortality, calculateCycleROI, SPECIES_CONFIG, estimateHarvestDate } from '../js/biomassEngine.js';
+import { evaluateWaterReading } from '../js/waterQuality.js';
+
+const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
+if (!session) { window.location.href = '../index.html'; }
+if (!['coordinador','gerente','asesor','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
+
+const activeFarmId = sessionStorage.getItem('aq_active_farm');
+const role = session.rol;
+document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
+document.getElementById('sidebarUserName').textContent   = session.nombre;
+document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
+document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('mainSidebar').classList.toggle('open'));
+document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
+function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
+updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
+
+await openDB(); await seedDemoData();
+
+const fincas = await getFincas(session.id_tenant || 'tenant-001');
+const target = activeFarmId ? fincas.filter(f=>f.id===activeFarmId) : fincas;
+const loteSelect = document.getElementById('loteSelect');
+loteSelect.innerHTML = '<option value="">— Selecciona estanque —</option>';
+let lotesMap = {};
+
+for (const finca of target) {
+  const ests = await getEstanques(finca.id);
+  for (const est of ests) {
+    const lote = await getActiveLoteByEstanque(est.id);
+    if (!lote || lote.estado !== 'activo') continue;
+    loteSelect.innerHTML += `<option value="${lote.id}">${est.nombre} — ${finca.nombre}</option>`;
+    lotesMap[lote.id] = { lote, est, finca };
+  }
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('lote')) { loteSelect.value = urlParams.get('lote'); await generarInforme(); }
+
+window.generarInforme = async function() {
+  const loteId = loteSelect.value;
+  if (!loteId || !lotesMap[loteId]) { showToast('Selecciona un estanque', 'warn'); return; }
+  const {lote, est, finca} = lotesMap[loteId];
+  const sp = SPECIES_CONFIG[lote.especie] || SPECIES_CONFIG.tilapia_nilotica;
+
+  const [aguas, alims, morts, muestras] = await Promise.all([
+    getRegistrosAgua(loteId), getRegistrosAlim(loteId), getRegistrosMort(loteId), getMuestreos(loteId)
+  ]);
+
+  const dias = daysSince(lote.fecha_inicio);
+  const biomIni = lote.count_inicial * lote.peso_inicial_g / 1000;
+  const biomCur = lote.count_actual  * lote.peso_actual_g  / 1000;
+  const fca = calculateFCA(lote.total_alimento_kg, biomIni, biomCur);
+  const pctSurv = ((lote.count_actual / lote.count_inicial) * 100).toFixed(1);
+  const totalMorts = lote.count_inicial - lote.count_actual;
+  const harvest = estimateHarvestDate(lote.peso_actual_g, dias, lote.fecha_inicio, lote.especie);
+
+  // Financial KPIs (gerente only)
+  const roi = ['gerente','superadmin'].includes(role) ? calculateCycleROI({
+    seed_count: lote.count_inicial,
+    seed_unit_cost_cop: lote.unidad_costo_cop || 350,
+    total_feed_kg: lote.total_alimento_kg,
+    feed_cost_per_kg_cop: 2800,
+    harvest_biomass_kg: biomCur,
+    sale_price_cop_per_kg: 8500
+  }) : null;
+
+  // Last water reading
+  const lastWater = aguas.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+  const waterEval = lastWater ? evaluateWaterReading(lastWater) : null;
+
+  const reportBody = document.getElementById('reportBody');
+  reportBody.innerHTML = `
+    <!-- Header -->
+    <div class="card mb-6" style="background:linear-gradient(135deg,var(--color-navy) 0%,var(--bg-card) 100%);border:1px solid var(--border-cyan);margin-bottom:var(--space-6)">
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
+          <div>
+            <div style="font-family:var(--font-brand);font-size:var(--text-xl);font-weight:800;color:var(--color-cyan)">${est.nombre}</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:4px">${finca.nombre} · ${sp.name} (${lote.especie})</div>
+            <div style="font-size:12px;color:var(--text-muted)">Inicio: ${formatDate(lote.fecha_inicio)} · Día ${dias} del ciclo</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--font-brand);font-size:var(--text-3xl);font-weight:800;color:var(--color-cyan)">${dias}</div>
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Días en ciclo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="kpi-grid mb-6" style="margin-bottom:var(--space-6)">
+      <div class="kpi-card">
+        <div class="kpi-label">Peces Actuales</div>
+        <div class="kpi-value cyan">${lote.count_actual.toLocaleString()}</div>
+        <div class="kpi-delta neutral">de ${lote.count_inicial.toLocaleString()} sembrados</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Biomasa Total</div>
+        <div class="kpi-value">${biomCur.toFixed(1)} kg</div>
+        <div class="kpi-delta neutral">Peso prom: ${lote.peso_actual_g} g</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">FCA Acumulado</div>
+        <div class="kpi-value ${!fca?'':fca<=sp.fcr_optimal?'ok':fca<=sp.fcr_max_acceptable?'warn':'critical'}">${fca ?? '—'}</div>
+        <div class="kpi-delta ${!fca?'neutral':fca<=sp.fcr_optimal?'up':'down'}">${!fca?'—':fca<=sp.fcr_optimal?'✅ Óptimo':fca<=sp.fcr_max_acceptable?'⚠️ Aceptable':'🚨 Elevado'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Supervivencia</div>
+        <div class="kpi-value ${parseFloat(pctSurv)>=95?'ok':'warn'}">${pctSurv}%</div>
+        <div class="kpi-delta ${parseFloat(pctSurv)>=95?'up':'down'}">${totalMorts} bajas totales</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Alimento Total</div>
+        <div class="kpi-value">${lote.total_alimento_kg?.toFixed(1)} kg</div>
+        <div class="kpi-delta neutral">${alims.length} raciones registradas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Días a Cosecha</div>
+        <div class="kpi-value gold">${harvest.days_remaining ?? '—'}</div>
+        <div class="kpi-delta neutral">${harvest.date ? 'Aprox: ' + formatDate(harvest.date.toISOString().slice(0,10)) : 'No proyectado'}</div>
+      </div>
+    </div>
+
+    <!-- Calidad del agua -->
+    ${lastWater ? `
+    <div class="card mb-6" style="margin-bottom:var(--space-6)">
+      <div class="card-header">
+        <div class="card-title">💧 Última Lectura de Agua · ${lastWater.fecha}</div>
+        <span class="status-badge ${waterEval?.systemStatus}">${waterEval?.systemStatus==='ok'?'✅ Normal':waterEval?.systemStatus==='warn'?'⚠️ Alerta':'🚨 Crítico'}</span>
+      </div>
+      <div class="card-body">
+        <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+          ${[
+            {l:'Temp',v:lastWater.temperatura,u:'°C',k:'temperatura'},
+            {l:'OD',v:lastWater.oxigeno_disuelto,u:'mg/L',k:'oxigeno_disuelto'},
+            {l:'pH',v:lastWater.ph,u:'pH',k:'ph'},
+            {l:'TAN',v:lastWater.tan,u:'mg/L',k:'tan'},
+            {l:'NO₂',v:lastWater.nitrito,u:'mg/L',k:'nitrito'},
+            {l:'Alcalinidad',v:lastWater.alcalinidad,u:'mg/L',k:'alcalinidad'},
+            {l:'Secchi',v:lastWater.disco_secchi,u:'cm',k:'disco_secchi'},
+            {l:'Salinidad',v:lastWater.salinidad,u:'ppt',k:'salinidad'},
+          ].map(p => {
+            const ev = waterEval?.results?.[p.k];
+            const st = ev?.status || 'ok';
+            return `<div class="kpi-card"><div class="kpi-label">${p.l}</div><div class="kpi-value ${st}" style="font-size:18px">${p.v!=null?parseFloat(p.v).toFixed(p.k==='nitrito'||p.k==='tan'?2:1):'—'}</div><div class="kpi-unit">${p.u}</div></div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>` : ''}
+
+    <!-- KPIs Financieros (solo gerente+) -->
+    ${roi ? `
+    <div class="card mb-6" style="margin-bottom:var(--space-6);border-color:var(--border-cyan)">
+      <div class="card-header"><div class="card-title">💰 Proyección Financiera del Ciclo</div><span class="status-badge ${roi.profitable?'ok':'warn'}">${roi.roi_pct}% ROI</span></div>
+      <div class="card-body">
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="kpi-card"><div class="kpi-label">Costo Semilla</div><div class="kpi-value" style="font-size:16px">${formatCOP(roi.seed_cost)}</div></div>
+          <div class="kpi-card"><div class="kpi-label">Costo Alimento</div><div class="kpi-value" style="font-size:16px">${formatCOP(roi.feed_cost)}</div></div>
+          <div class="kpi-card"><div class="kpi-label">Costo Total</div><div class="kpi-value warn" style="font-size:16px">${formatCOP(roi.total_cost)}</div></div>
+          <div class="kpi-card"><div class="kpi-label">Ingreso Bruto Proj.</div><div class="kpi-value cyan" style="font-size:16px">${formatCOP(roi.gross_income)}</div><div class="kpi-delta neutral">@ $8.500/kg</div></div>
+          <div class="kpi-card"><div class="kpi-label">Margen Bruto</div><div class="kpi-value ${roi.profitable?'ok':'critical'}" style="font-size:16px">${formatCOP(roi.gross_margin)}</div></div>
+          <div class="kpi-card"><div class="kpi-label">ROI</div><div class="kpi-value ${roi.profitable?'ok':'critical'}" style="font-size:24px;font-weight:800">${roi.roi_pct}%</div></div>
+        </div>
+      </div>
+    </div>` : ''}
+
+    <!-- Historial de actividad -->
+    <div class="grid-2" style="gap:var(--space-6)">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📋 Últimas lecturas de agua</div></div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table><thead><tr><th>Fecha</th><th>Temp</th><th>OD</th><th>pH</th><th>Estado</th></tr></thead><tbody>
+              ${aguas.sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,5).map(r=>{const ev=evaluateWaterReading(r);return `<tr><td>${r.fecha}</td><td>${formatNum(r.temperatura)}</td><td>${formatNum(r.oxigeno_disuelto)}</td><td>${formatNum(r.ph)}</td><td><span class="status-badge ${ev.systemStatus}" style="font-size:10px">${ev.systemStatus==='ok'?'✅':'⚠️'}</span></td></tr>`;}).join('')}
+              ${!aguas.length?'<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:16px">Sin datos</td></tr>':''}
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">📋 Últimos registros de mortalidad</div></div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table><thead><tr><th>Fecha</th><th>Cantidad</th><th>Causa</th></tr></thead><tbody>
+              ${morts.sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,5).map(m=>`<tr><td>${m.fecha}</td><td class="td-critical">${m.cantidad}</td><td style="font-size:11px">${m.causa||'—'}</td></tr>`).join('')}
+              ${!morts.length?'<tr><td colspan="3" style="text-align:center;color:var(--color-ok);padding:16px">✅ Sin mortalidades</td></tr>':''}
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+};
+</script>
+</body>
+</html>

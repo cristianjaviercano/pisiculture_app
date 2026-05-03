@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Aquashell</title>
+  <link rel="icon" href="../img/aquashell.png"/>
+  <link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-logo">
+      <img src="../img/aquashell.png" alt="Aquashell"/>
+      <div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">Control v3.0</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebarUserAvatar">U</div>
+      <div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">PRINCIPAL</div>
+      <a href="dashboard.html" class="nav-item active" data-page="dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+      </a>
+      <a href="farms.html" class="nav-item" data-page="farms">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Mis Fincas
+      </a>
+      <div class="nav-section">OPERACIONES</div>
+      <a href="water-quality.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua
+      </a>
+      <a href="feeding.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Alimentación
+      </a>
+      <a href="mortality.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad
+      </a>
+      <a href="biometry.html" class="nav-item" id="navBiometry">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo Biométrico
+      </a>
+      <a href="inputs.html" class="nav-item" id="navInputs">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Insumos Sanitarios
+      </a>
+      <div class="nav-section">ANÁLISIS</div>
+      <a href="reports.html" class="nav-item" id="navReports">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>Informes & KPIs
+      </a>
+      <div class="nav-section">SISTEMA</div>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar Sesión
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="page-title" id="pageTitle">Dashboard</div>
+        <div class="page-subtitle" id="pageSubtitle">Cargando...</div>
+      </div>
+      <div class="header-actions">
+        <span id="headerDate" style="font-size:var(--text-xs);color:var(--text-muted)"></span>
+      </div>
+    </header>
+
+    <div class="page-body" id="dashBody">
+      <div class="empty-state"><div class="spinner" style="margin:0 auto"></div><p style="margin-top:16px;color:var(--text-muted)">Cargando datos...</p></div>
+    </div>
+  </main>
+</div>
+<div id="toastContainer"></div>
+
+<script type="module">
+import { openDB, seedDemoData, getAll, getFincas, getEstanques, getLotesByEstanque, getRegistrosAgua, getLatestWaterReading, getActiveLoteByEstanque, getRetiroActivo } from '../js/db.js';
+import { initAuth, showToast, formatNum, formatCOP, daysSince, formatDate, ROLES } from '../js/auth.js';
+import { calculateLMax, calculateFCA, evaluateMortality, SPECIES_CONFIG } from '../js/biomassEngine.js';
+import { evaluateWaterReading } from '../js/waterQuality.js';
+
+// ── Init ────────────────────────────────────────────────────
+const auth = await (async () => {
+  const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
+  if (!session) { window.location.href = '../index.html'; return null; }
+  return session;
+})();
+if (!auth) throw new Error('No session');
+
+await openDB();
+await seedDemoData();
+
+const activeFarmId = sessionStorage.getItem('aq_active_farm');
+const role = auth.rol;
+
+// Sidebar
+document.getElementById('sidebarUserAvatar').textContent = auth.nombre[0];
+document.getElementById('sidebarUserName').textContent   = auth.nombre;
+document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
+document.getElementById('headerDate').textContent        = new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('mainSidebar').classList.toggle('open'));
+document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
+
+// Online/offline
+function updateSync() {
+  const dot = document.getElementById('syncDot'); const lbl = document.getElementById('syncLabel');
+  if (navigator.onLine) { dot.className='sync-dot'; lbl.textContent='En línea'; }
+  else { dot.className='sync-dot offline'; lbl.textContent='Sin conexión'; }
+}
+updateSync(); window.addEventListener('online', updateSync); window.addEventListener('offline', updateSync);
+
+// Hide restricted nav
+if (role === 'operario') {
+  document.getElementById('navBiometry').style.display = 'none';
+  document.getElementById('navInputs').style.display   = 'none';
+  document.getElementById('navReports').style.display  = 'none';
+}
+if (role === 'asesor') {
+  document.getElementById('navBiometry').style.display = 'none';
+  document.getElementById('navInputs').style.display   = 'none';
+}
+
+// ── Load data ───────────────────────────────────────────────
+const allFincas   = await getFincas(auth.id_tenant || 'tenant-001');
+const targetFarms = activeFarmId ? allFincas.filter(f => f.id === activeFarmId) : allFincas;
+
+// Build estanques+lotes for target farms
+const farmData = [];
+for (const finca of targetFarms) {
+  const estanques = await getEstanques(finca.id);
+  const estData   = [];
+  for (const est of estanques) {
+    const lote      = await getActiveLoteByEstanque(est.id);
+    const reading   = lote ? await getLatestWaterReading(lote.id) : null;
+    const retiro    = lote ? await getRetiroActivo(lote.id) : null;
+    const waterEval = reading ? evaluateWaterReading(reading) : null;
+    let fca = null;
+    if (lote && lote.estado === 'activo') {
+      const biomIni = lote.count_inicial * lote.peso_inicial_g / 1000;
+      const biomCur = lote.count_actual  * lote.peso_actual_g  / 1000;
+      fca = calculateFCA(lote.total_alimento_kg, biomIni, biomCur);
+    }
+    estData.push({ est, lote, reading, retiro, waterEval, fca });
+  }
+  farmData.push({ finca, estanques: estData });
+}
+
+// ── Render ──────────────────────────────────────────────────
+const finca0 = farmData[0]?.finca;
+document.getElementById('pageTitle').textContent    = `Dashboard · ${finca0?.nombre || 'Todas las fincas'}`;
+document.getElementById('pageSubtitle').textContent = `${ROLES[role]?.label} — ${finca0?.municipio || ''}, ${finca0?.departamento || ''}`;
+
+const body = document.getElementById('dashBody');
+
+// ── OPERARIO VIEW ───────────────────────────────────────────
+if (role === 'operario') {
+  const estList = farmData[0]?.estanques || [];
+  const todayStr = new Date().toISOString().slice(0,10);
+  body.innerHTML = `
+    <div class="alert info mb-6" style="margin-bottom:var(--space-6)">
+      <span class="alert-icon">👋</span>
+      <div class="alert-body">
+        <div class="alert-title">Buenos días, ${auth.nombre.split(' ')[0]}</div>
+        <div>Tienes <strong>${estList.filter(e=>e.lote?.estado==='activo').length} estanques activos</strong> para monitorear hoy.</div>
+      </div>
+    </div>
+    <div class="mb-4"><h2 style="font-family:var(--font-brand);font-size:var(--text-lg);font-weight:700;color:var(--text-primary);margin-bottom:var(--space-4)">📋 Checklist del Día</h2></div>
+    <div class="grid-auto">
+      ${estList.map(({est, lote, waterEval, fca, retiro}) => {
+        if (!lote || lote.estado !== 'activo') return `
+          <div class="card" style="border-color:var(--border-light);opacity:0.6">
+            <div class="card-body" style="padding:var(--space-4)">
+              <div style="font-weight:700;color:var(--text-muted)">${est.nombre}</div>
+              <div class="status-badge info" style="margin-top:8px">⬜ Vacío</div>
+            </div>
+          </div>`;
+        const dias = daysSince(lote.fecha_inicio);
+        const biomKg = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(1);
+        const sysStatus = waterEval?.systemStatus || 'ok';
+        const borderColor = sysStatus === 'critical' ? 'var(--color-critical)' : sysStatus === 'warn' ? 'var(--color-warn)' : 'var(--border-cyan)';
+        const sp = SPECIES_CONFIG[lote.especie] || SPECIES_CONFIG.tilapia_nilotica;
+        return `
+          <div class="card" style="border-color:${borderColor}">
+            <div class="card-header">
+              <div class="card-title">🐟 ${est.nombre}</div>
+              ${retiro ? '<span class="retiro-badge">⛔ RETIRO</span>' : `<span class="status-badge ${sysStatus === 'ok' ? 'ok' : sysStatus}">${sysStatus === 'ok' ? '✅ OK' : sysStatus === 'warn' ? '⚠️ Alerta' : '🚨 Crítico'}</span>`}
+            </div>
+            <div class="card-body" style="padding:var(--space-4)">
+              <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr);gap:var(--space-3);margin-bottom:var(--space-4)">
+                <div><div class="kpi-label">Día de ciclo</div><div class="kpi-value cyan" style="font-size:var(--text-xl)">${dias}</div></div>
+                <div><div class="kpi-label">Biomasa</div><div class="kpi-value" style="font-size:var(--text-xl)">${biomKg} kg</div></div>
+                <div><div class="kpi-label">Peso prom.</div><div class="kpi-value" style="font-size:var(--text-xl)">${lote.peso_actual_g} g</div></div>
+                <div><div class="kpi-label">FCA</div><div class="kpi-value ${fca && fca <= sp.fcr_optimal ? 'ok' : fca && fca <= sp.fcr_max_acceptable ? 'warn' : 'critical'}" style="font-size:var(--text-xl)">${fca ?? '—'}</div></div>
+              </div>
+              ${waterEval?.alerts?.length ? `<div class="alert warn" style="margin-bottom:12px;padding:8px 12px"><span>⚠️</span><div style="font-size:12px">${waterEval.alerts[0].message}</div></div>` : ''}
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <a href="water-quality.html?lote=${lote.id}&est=${est.id}" class="btn btn-ghost btn-sm btn-full">💧 Registrar Calidad del Agua</a>
+                <a href="feeding.html?lote=${lote.id}&est=${est.id}" class="btn btn-ghost btn-sm btn-full" ${retiro ? 'style="opacity:0.5;pointer-events:none"' : ''}>🥗 Registrar Alimentación ${retiro ? '(bloqueado)' : ''}</a>
+                <a href="mortality.html?lote=${lote.id}&est=${est.id}" class="btn btn-danger btn-sm btn-full">💀 Registrar Mortalidad</a>
+              </div>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ── COORDINADOR VIEW ────────────────────────────────────────
+else if (role === 'coordinador') {
+  const allEst = farmData.flatMap(fd => fd.estanques.filter(e => e.lote?.estado === 'activo'));
+  const globalBiomass = allEst.reduce((s,e) => s + (e.lote.count_actual * e.lote.peso_actual_g / 1000), 0);
+  const critCount = allEst.filter(e => e.waterEval?.systemStatus === 'critical').length;
+  const warnCount = allEst.filter(e => e.waterEval?.systemStatus === 'warn').length;
+
+  body.innerHTML = `
+    <div class="kpi-grid mb-6" style="margin-bottom:var(--space-6)">
+      <div class="kpi-card"><div class="kpi-label">Estanques Activos</div><div class="kpi-value cyan">${allEst.length}</div><div class="kpi-delta neutral">Total monitoreados</div></div>
+      <div class="kpi-card"><div class="kpi-label">Biomasa Total</div><div class="kpi-value">${globalBiomass.toFixed(0)} kg</div><div class="kpi-delta neutral">Todos los estanques</div></div>
+      <div class="kpi-card"><div class="kpi-label">Alertas Críticas</div><div class="kpi-value ${critCount>0?'critical':'ok'}">${critCount}</div><div class="kpi-delta ${critCount>0?'down':'up'}">${critCount>0?'⚠️ Requieren atención':'✅ Todo OK'}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Alertas Menores</div><div class="kpi-value ${warnCount>0?'warn':'ok'}">${warnCount}</div><div class="kpi-delta neutral">En zona de alerta</div></div>
+    </div>
+    <div class="card mb-6">
+      <div class="card-header"><div class="card-title">🐟 Estado de Estanques</div></div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Estanque</th><th>Especie</th><th>Día</th><th>Peces</th><th>Peso (g)</th><th>Biomasa (kg)</th><th>FCA</th><th>Agua</th><th>Retiro</th><th>Acciones</th></tr></thead>
+            <tbody>
+              ${farmData.flatMap(fd => fd.estanques.map(({est, lote, waterEval, fca, retiro}) => {
+                if (!lote || lote.estado !== 'activo') return `<tr><td class="td-primary">${est.nombre}</td><td colspan="8"><span class="status-badge info">Vacío</span></td><td><a href="farms.html" class="btn btn-ghost btn-sm">+ Sembrar</a></td></tr>`;
+                const dias = daysSince(lote.fecha_inicio);
+                const biomKg = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(1);
+                const sp = SPECIES_CONFIG[lote.especie] || SPECIES_CONFIG.tilapia_nilotica;
+                const fcaStatus = !fca ? '' : fca <= sp.fcr_optimal ? 'td-ok' : fca <= sp.fcr_max_acceptable ? 'td-warn' : 'td-critical';
+                const waterStatus = waterEval?.systemStatus || 'ok';
+                return `<tr>
+                  <td class="td-primary">${est.nombre}</td>
+                  <td style="font-size:11px;color:var(--text-muted)">${sp.name}</td>
+                  <td class="td-cyan">${dias}</td>
+                  <td>${lote.count_actual.toLocaleString()}</td>
+                  <td class="td-cyan">${lote.peso_actual_g}</td>
+                  <td class="td-cyan">${biomKg}</td>
+                  <td class="${fcaStatus}">${fca ?? '—'}</td>
+                  <td><span class="status-badge ${waterStatus}">${waterStatus==='ok'?'✅':waterStatus==='warn'?'⚠️':'🚨'}</span></td>
+                  <td>${retiro ? `<span class="retiro-badge">⛔ ${Math.ceil((new Date(retiro.fecha_fin_retiro)-new Date())/86400000)}d</span>` : '<span style="color:var(--color-ok);font-size:12px">✅ Libre</span>'}</td>
+                  <td style="white-space:nowrap;display:flex;gap:6px">
+                    <a href="biometry.html?lote=${lote.id}" class="btn btn-ghost btn-sm">📏</a>
+                    <a href="inputs.html?lote=${lote.id}" class="btn btn-ghost btn-sm">💊</a>
+                  </td>
+                </tr>`;
+              })).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── GERENTE / ASESOR / SUPERADMIN VIEW ──────────────────────
+else {
+  const allEst      = farmData.flatMap(fd => fd.estanques);
+  const activeEst   = allEst.filter(e => e.lote?.estado === 'activo');
+  const totalBiomass = activeEst.reduce((s,e) => s + (e.lote.count_actual * e.lote.peso_actual_g / 1000), 0);
+  const totalFish    = activeEst.reduce((s,e) => s + e.lote.count_actual, 0);
+  const retiroCount  = activeEst.filter(e => e.retiro).length;
+  const critCount    = activeEst.filter(e => e.waterEval?.systemStatus === 'critical').length;
+
+  body.innerHTML = `
+    <div class="kpi-grid mb-6" style="margin-bottom:var(--space-6)">
+      <div class="kpi-card"><div class="kpi-label">Fincas Activas</div><div class="kpi-value cyan">${farmData.length}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Estanques en Ciclo</div><div class="kpi-value cyan">${activeEst.length} / ${allEst.length}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Biomasa Total</div><div class="kpi-value">${totalBiomass.toFixed(0)} kg</div><div class="kpi-delta neutral">${totalFish.toLocaleString()} peces</div></div>
+      <div class="kpi-card"><div class="kpi-label">Retiros Activos</div><div class="kpi-value ${retiroCount>0?'critical':'ok'}">${retiroCount}</div><div class="kpi-delta ${retiroCount>0?'down':'up'}">${retiroCount>0?'Cosecha bloqueada':'Sin bloqueos'}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Alertas CTQ</div><div class="kpi-value ${critCount>0?'critical':'ok'}">${critCount}</div><div class="kpi-delta ${critCount>0?'down':'up'}">${critCount>0?'🚨 Críticas':'✅ Normal'}</div></div>
+    </div>
+    <div class="grid-2" style="gap:var(--space-6)">
+      ${farmData.map(fd => `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🏡 ${fd.finca.nombre}</div>
+            <span style="font-size:var(--text-xs);color:var(--text-muted)">${fd.finca.municipio}, ${fd.finca.departamento}</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Estanque</th><th>Día</th><th>Biomasa</th><th>FCA</th><th>Estado</th></tr></thead>
+                <tbody>
+                  ${fd.estanques.map(({est, lote, waterEval, fca, retiro}) => {
+                    if (!lote || lote.estado !== 'activo') return `<tr><td class="td-primary" style="font-size:12px">${est.nombre}</td><td colspan="4"><span class="status-badge info" style="font-size:10px">Vacío</span></td></tr>`;
+                    const dias = daysSince(lote.fecha_inicio);
+                    const biomKg = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(0);
+                    const ws = waterEval?.systemStatus || 'ok';
+                    return `<tr>
+                      <td class="td-primary" style="font-size:12px">${est.nombre}</td>
+                      <td class="td-cyan" style="font-size:12px">${dias}d</td>
+                      <td class="td-cyan" style="font-size:12px">${biomKg} kg</td>
+                      <td class="${!fca?'':fca<=1.8?'td-ok':'td-warn'}" style="font-size:12px">${fca??'—'}</td>
+                      <td>${retiro?'<span class="retiro-badge" style="font-size:10px">⛔</span>':`<span class="status-badge ${ws}" style="font-size:10px">${ws==='ok'?'✅':ws==='warn'?'⚠️':'🚨'}</span>`}</td>
+                    </tr>`;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div style="padding:var(--space-4);border-top:1px solid var(--border-color)">
+            <a href="reports.html?finca=${fd.finca.id}" class="btn btn-ghost btn-sm">📊 Ver Informe</a>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+</script>
+</body>
+</html>
