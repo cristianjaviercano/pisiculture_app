@@ -9,21 +9,40 @@
 <body>
 <div class="app-layout">
   <aside class="sidebar" id="mainSidebar">
-    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">Control v3.0</span></div></div>
+    <div class="sidebar-logo"><img src="../img/aquashell.png" alt="Aquashell"/><div class="logo-brand"><span class="logo-title">Aquashell</span><span class="logo-sub">v3.0</span></div></div>
     <div class="sidebar-user"><div class="user-avatar" id="sidebarUserAvatar">U</div><div><div class="user-name" id="sidebarUserName">—</div><div id="sidebarUserRole"></div></div></div>
     <nav class="sidebar-nav">
       <div class="nav-section">PRINCIPAL</div>
-      <a href="dashboard.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a href="dashboard.html" class="nav-item" id="navDash">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
+      </a>
+      <a href="farms.html" class="nav-item" id="navFarms">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Mis Fincas
+      </a>
       <div class="nav-section">OPERACIONES</div>
-      <a href="water-quality.html" class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua</a>
-      <a href="feeding.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Alimentación</a>
-      <a href="mortality.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad</a>
-      <a href="biometry.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo</a>
-      <a href="inputs.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>Insumos</a>
+      <a href="water-quality.html" class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>Calidad del Agua
+      </a>
+      <a href="feeding.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Alimentación
+      </a>
+      <a href="mortality.html" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Mortalidad
+      </a>
+      <a href="biometry.html" class="nav-item" id="navBiometry">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Muestreo Biométrico
+      </a>
+      <a href="inputs.html" class="nav-item" id="navInputs">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18"/></svg>Insumos Sanitarios
+      </a>
       <div class="nav-section">ANÁLISIS</div>
-      <a href="reports.html" class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Informes</a>
+      <a href="reports.html" class="nav-item" id="navReports">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Informes
+      </a>
       <div class="nav-section">SISTEMA</div>
-      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar Sesión</a>
+      <a href="../index.html" class="nav-item" id="logoutBtn" style="color:var(--color-critical)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/></svg>Cerrar Sesión
+      </a>
     </nav>
     <div class="sidebar-footer"><div class="sync-status"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">En línea</span></div></div>
   </aside>
@@ -31,8 +50,8 @@
   <main class="main-content">
     <header class="page-header">
       <button class="mobile-menu-btn" id="mobileMenuBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-      <div><div class="page-title">💧 Calidad del Agua</div><div class="page-subtitle">CU-AQUA-03 · 8 parámetros CTQ</div></div>
-      <div class="header-actions"><button class="btn btn-primary btn-sm" onclick="document.getElementById('histModal').classList.add('open')">📋 Historial</button></div>
+      <div><div class="page-title">💧 Calidad del Agua</div><div class="page-subtitle">CU-AQUA-03 · 8 parámetros CTQ con semáforos</div></div>
+      <div class="header-actions"><button class="btn btn-ghost btn-sm" onclick="document.getElementById('histModal').classList.add('open')">📋 Historial</button></div>
     </header>
 
     <div class="page-body">
@@ -42,54 +61,113 @@
           <div class="grid-2" style="gap:var(--space-4);align-items:end">
             <div class="form-group" style="margin:0">
               <label class="form-label">Estanque / Lote <span class="form-required">*</span></label>
-              <select class="form-select" id="loteSelect"></select>
+              <select class="form-select" id="loteSelect"><option value="">— Selecciona estanque —</option></select>
             </div>
-            <div id="loteInfo" style="font-size:var(--text-sm);color:var(--text-muted)">Selecciona un estanque</div>
+            <div id="loteInfo" style="font-size:13px;color:var(--text-muted)">Selecciona un estanque</div>
           </div>
         </div>
       </div>
 
-      <!-- CTQ Status bar -->
-      <div id="ctqStatusBar" class="mb-6" style="display:none;margin-bottom:var(--space-6)"></div>
-
-      <!-- Form -->
+      <!-- Form CTQ — HTML ESTÁTICO (no template literal) -->
       <div class="card">
-        <div class="card-header"><div class="card-title">📝 Registro de Parámetros — <span id="formDate"></span></div></div>
+        <div class="card-header"><div class="card-title">📝 Parámetros — <span id="formDate"></span></div></div>
         <div class="card-body">
           <form id="waterForm" onsubmit="handleSubmit(event)">
-            <div class="grid-2" style="gap:var(--space-6)">
-              ${[
-                {key:'temperatura', label:'Temperatura', unit:'°C', min:15, max:40, step:0.1, placeholder:'ej. 27.5'},
-                {key:'oxigeno_disuelto', label:'Oxígeno Disuelto', unit:'mg/L', min:0, max:15, step:0.1, placeholder:'ej. 6.8'},
-                {key:'ph', label:'pH', unit:'pH', min:4, max:10, step:0.1, placeholder:'ej. 7.2'},
-                {key:'tan', label:'TAN (Amoniaco Total)', unit:'mg/L', min:0, max:5, step:0.01, placeholder:'ej. 0.5'},
-                {key:'nitrito', label:'Nitrito (NO₂⁻)', unit:'mg/L', min:0, max:5, step:0.01, placeholder:'ej. 0.05'},
-                {key:'alcalinidad', label:'Alcalinidad', unit:'mg/L CaCO₃', min:0, max:500, step:1, placeholder:'ej. 150'},
-                {key:'disco_secchi', label:'Disco Secchi', unit:'cm', min:0, max:200, step:1, placeholder:'ej. 60'},
-                {key:'salinidad', label:'Salinidad', unit:'ppt', min:0, max:20, step:0.1, placeholder:'ej. 0.5'},
-              ].map(p => `
-                <div class="form-group" style="margin:0">
-                  <label class="form-label" for="${p.key}">${p.label}</label>
-                  <div class="input-unit">
-                    <input type="number" id="${p.key}" name="${p.key}" class="form-input" min="${p.min}" max="${p.max}" step="${p.step}" placeholder="${p.placeholder}" oninput="evaluateField('${p.key}')"/>
-                    <span class="unit-label">${p.unit}</span>
-                  </div>
-                  <div id="${p.key}_feedback" class="form-hint" style="min-height:18px"></div>
-                </div>`).join('')}
+            <div class="grid-2" style="gap:var(--space-5)">
+
+              <!-- Temperatura -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="temperatura">Temperatura</label>
+                <div class="input-unit">
+                  <input type="number" id="temperatura" class="form-input" min="15" max="40" step="0.1" placeholder="ej. 27.5" oninput="evaluateField('temperatura')"/>
+                  <span class="unit-label">°C</span>
+                </div>
+                <div id="temperatura_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+
+              <!-- Oxígeno Disuelto -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="oxigeno_disuelto">Oxígeno Disuelto</label>
+                <div class="input-unit">
+                  <input type="number" id="oxigeno_disuelto" class="form-input" min="0" max="15" step="0.1" placeholder="ej. 6.8" oninput="evaluateField('oxigeno_disuelto')"/>
+                  <span class="unit-label">mg/L</span>
+                </div>
+                <div id="oxigeno_disuelto_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+
+              <!-- pH -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="ph">pH</label>
+                <div class="input-unit">
+                  <input type="number" id="ph" class="form-input" min="4" max="10" step="0.1" placeholder="ej. 7.2" oninput="evaluateField('ph')"/>
+                  <span class="unit-label">pH</span>
+                </div>
+                <div id="ph_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+
+              <!-- TAN -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="tan">TAN (Amoniaco Total)</label>
+                <div class="input-unit">
+                  <input type="number" id="tan" class="form-input" min="0" max="5" step="0.01" placeholder="ej. 0.5" oninput="evaluateField('tan')"/>
+                  <span class="unit-label">mg/L</span>
+                </div>
+                <div id="tan_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+
+              <!-- Nitrito -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="nitrito">Nitrito (NO₂⁻)</label>
+                <div class="input-unit">
+                  <input type="number" id="nitrito" class="form-input" min="0" max="5" step="0.01" placeholder="ej. 0.05" oninput="evaluateField('nitrito')"/>
+                  <span class="unit-label">mg/L</span>
+                </div>
+                <div id="nitrito_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+
+              <!-- Alcalinidad -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="alcalinidad">Alcalinidad</label>
+                <div class="input-unit">
+                  <input type="number" id="alcalinidad" class="form-input" min="0" max="500" step="1" placeholder="ej. 150" oninput="evaluateField('alcalinidad')"/>
+                  <span class="unit-label">mg CaCO₃</span>
+                </div>
+                <div id="alcalinidad_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+
+              <!-- Disco Secchi -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="disco_secchi">Disco Secchi</label>
+                <div class="input-unit">
+                  <input type="number" id="disco_secchi" class="form-input" min="0" max="200" step="1" placeholder="ej. 60" oninput="evaluateField('disco_secchi')"/>
+                  <span class="unit-label">cm</span>
+                </div>
+                <div id="disco_secchi_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
+
+              <!-- Salinidad -->
+              <div class="form-group" style="margin:0">
+                <label class="form-label" for="salinidad">Salinidad</label>
+                <div class="input-unit">
+                  <input type="number" id="salinidad" class="form-input" min="0" max="20" step="0.1" placeholder="ej. 0.5" oninput="evaluateField('salinidad')"/>
+                  <span class="unit-label">ppt</span>
+                </div>
+                <div id="salinidad_feedback" class="form-hint" style="min-height:18px"></div>
+              </div>
             </div>
 
-            <div class="form-group mt-4" style="margin-top:var(--space-6)">
-              <label class="form-label">Observaciones adicionales</label>
-              <textarea class="form-textarea" id="observaciones" placeholder="Anota cualquier novedad: color del agua, olor, comportamiento de los peces..."></textarea>
+            <div class="form-group" style="margin-top:var(--space-5)">
+              <label class="form-label">Observaciones</label>
+              <textarea class="form-textarea" id="observaciones" placeholder="Anota novedades: color del agua, olor, comportamiento de los peces..."></textarea>
             </div>
 
-            <div id="blockingAlert" class="alert critical" style="display:none;margin-top:var(--space-4)">
+            <div id="blockingAlert" class="alert critical" style="display:none;margin:var(--space-4) 0">
               <span class="alert-icon">🚨</span>
-              <div class="alert-body"><div class="alert-title">PARÁMETRO CRÍTICO — Acción inmediata requerida</div><div id="blockingMsg"></div></div>
+              <div class="alert-body"><div class="alert-title">PARÁMETRO CRÍTICO — Acción inmediata</div><div id="blockingMsg"></div></div>
             </div>
 
-            <div style="margin-top:var(--space-6);display:flex;gap:var(--space-3)">
-              <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">💾 Guardar Registro</button>
+            <div style="display:flex;gap:var(--space-3);margin-top:var(--space-5)">
+              <button type="submit" class="btn btn-primary btn-lg">💾 Guardar Registro</button>
               <button type="reset" class="btn btn-ghost" onclick="resetFeedbacks()">Limpiar</button>
             </div>
           </form>
@@ -99,7 +177,7 @@
   </main>
 </div>
 
-<!-- Historial Modal -->
+<!-- Modal Historial -->
 <div class="modal-overlay" id="histModal">
   <div class="modal" style="max-width:700px">
     <div class="modal-header">
@@ -113,16 +191,17 @@
 <div id="toastContainer"></div>
 
 <script type="module">
-import { openDB, seedDemoData, getFincas, getEstanques, getLotesByEstanque, getActiveLoteByEstanque, getRegistrosAgua, put } from '../js/db.js';
-import { initAuth, showToast, formatNum, daysSince, ROLES } from '../js/auth.js';
-import { CTQ_PARAMS, evaluateCTQ, evaluateWaterReading, WATER_QUALITY_ICONS } from '../js/waterQuality.js';
+import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getRegistrosAgua, put } from '../js/db.js';
+import { ROLES, showToast, formatNum, daysSince } from '../js/auth.js';
+import { CTQ_PARAMS, evaluateCTQ, evaluateWaterReading } from '../js/waterQuality.js';
 
-// Auth
+// ── Auth ─────────────────────────────────────────────────────
 const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
 if (!session) { window.location.href = '../index.html'; }
 const activeFarmId = sessionStorage.getItem('aq_active_farm');
 const role = session.rol;
 
+// Sidebar
 document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
 document.getElementById('sidebarUserName').textContent   = session.nombre;
 document.getElementById('sidebarUserRole').innerHTML     = `<span class="user-role-badge ${ROLES[role]?.color}">${ROLES[role]?.label}</span>`;
@@ -130,97 +209,98 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => documen
 document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
 document.getElementById('formDate').textContent = new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
 
+// Ocultar nav según rol
+if (role === 'operario') {
+  document.getElementById('navFarms').style.display    = 'none';
+  document.getElementById('navBiometry').style.display = 'none';
+  document.getElementById('navInputs').style.display   = 'none';
+  document.getElementById('navReports').style.display  = 'none';
+}
+
+// Sync status
 function updateSync() {
   const d=document.getElementById('syncDot'), l=document.getElementById('syncLabel');
-  if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}
+  if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}
+  else{d.className='sync-dot offline';l.textContent='Sin conexión';}
 }
 updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
 
+// ── DB ───────────────────────────────────────────────────────
 await openDB(); await seedDemoData();
 
-// Load lotes
 const fincas   = await getFincas(session.id_tenant || 'tenant-001');
 const target   = activeFarmId ? fincas.filter(f=>f.id===activeFarmId) : fincas;
 const loteSelect = document.getElementById('loteSelect');
-loteSelect.innerHTML = '<option value="">— Selecciona estanque —</option>';
-
 let lotesMap = {};
+
 for (const finca of target) {
   const ests = await getEstanques(finca.id);
   for (const est of ests) {
     const lote = await getActiveLoteByEstanque(est.id);
     if (!lote || lote.estado !== 'activo') continue;
-    loteSelect.innerHTML += `<option value="${lote.id}" data-est="${est.id}" data-finca="${finca.nombre}" data-est-name="${est.nombre}">${est.nombre} — ${finca.nombre}</option>`;
-    lotesMap[lote.id] = { lote, est, finca };
+    loteSelect.innerHTML += `<option value="${lote.id}">${est.nombre} — ${finca.nombre}</option>`;
+    lotesMap[lote.id] = { lote, est };
   }
 }
 
-// Pre-select from URL params
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('lote')) loteSelect.value = urlParams.get('lote');
-updateLoteInfo();
-
 loteSelect.addEventListener('change', updateLoteInfo);
+updateLoteInfo();
 
 function updateLoteInfo() {
   const val = loteSelect.value;
   const info = document.getElementById('loteInfo');
-  if (!val || !lotesMap[val]) { info.textContent = 'Selecciona un estanque'; return; }
+  if (!val || !lotesMap[val]) { info.textContent='Selecciona un estanque'; return; }
   const {lote, est} = lotesMap[val];
   const dias = daysSince(lote.fecha_inicio);
   const biomKg = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(1);
-  info.innerHTML = `<span style="color:var(--color-cyan);font-weight:600">${est.nombre}</span> · Día ${dias} · ${lote.count_actual} peces · ${biomKg} kg biomasa`;
+  info.innerHTML = `<strong style="color:var(--color-cyan)">${est.nombre}</strong> · Día ${dias} · ${lote.count_actual} peces · ${biomKg} kg`;
   loadHistory(val);
 }
 
 async function loadHistory(loteId) {
   const readings = await getRegistrosAgua(loteId);
-  const sorted = readings.sort((a,b) => b.fecha.localeCompare(a.fecha)).slice(0,7);
+  const sorted = readings.sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,7);
   const content = document.getElementById('histContent');
-  if (!sorted.length) { content.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💧</div><p>Sin lecturas registradas</p></div>'; return; }
-  content.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Temp°C</th><th>OD mg/L</th><th>pH</th><th>TAN</th><th>NO₂</th><th>Secchi</th><th>Estado</th></tr></thead><tbody>
-    ${sorted.map(r => {
-      const ev = evaluateWaterReading(r);
-      return `<tr><td>${r.fecha}</td><td>${formatNum(r.temperatura)}</td><td>${formatNum(r.oxigeno_disuelto)}</td><td>${formatNum(r.ph)}</td><td>${formatNum(r.tan,2)}</td><td>${formatNum(r.nitrito,2)}</td><td>${formatNum(r.disco_secchi,0)}</td><td><span class="status-badge ${ev.systemStatus}">${ev.systemStatus==='ok'?'✅ OK':ev.systemStatus==='warn'?'⚠️ Alerta':'🚨 Crítico'}</span></td></tr>`;
-    }).join('')}
+  if (!sorted.length) { content.innerHTML='<div class="empty-state"><div class="empty-state-icon">💧</div><p>Sin lecturas aún</p></div>'; return; }
+  content.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Temp°C</th><th>OD mg/L</th><th>pH</th><th>TAN</th><th>NO₂</th><th>Estado</th></tr></thead><tbody>
+    ${sorted.map(r=>{const ev=evaluateWaterReading(r);return `<tr><td>${r.fecha}</td><td>${formatNum(r.temperatura)}</td><td>${formatNum(r.oxigeno_disuelto)}</td><td>${formatNum(r.ph)}</td><td>${formatNum(r.tan,2)}</td><td>${formatNum(r.nitrito,2)}</td><td><span class="status-badge ${ev.systemStatus}">${ev.systemStatus==='ok'?'✅ OK':ev.systemStatus==='warn'?'⚠️ Alerta':'🚨 Crítico'}</span></td></tr>`;}).join('')}
   </tbody></table></div>`;
 }
 
-// CTQ live evaluation
+// ── Live CTQ evaluation ──────────────────────────────────────
+const CTQ_KEYS = ['temperatura','oxigeno_disuelto','ph','tan','nitrito','alcalinidad','disco_secchi','salinidad'];
+const COLOR = { ok:'var(--color-ok)', warn:'var(--color-warn)', critical:'var(--color-critical)' };
+
 window.evaluateField = function(key) {
   const input = document.getElementById(key);
   const fbDiv = document.getElementById(key + '_feedback');
-  if (!input || !input.value) { fbDiv.textContent=''; fbDiv.style.color=''; return; }
+  if (!input || input.value === '') { fbDiv.textContent=''; input.style.borderColor=''; checkBlocking(); return; }
   const result = evaluateCTQ(key, parseFloat(input.value));
-  const colors = { ok: 'var(--color-ok)', warn: 'var(--color-warn)', critical: 'var(--color-critical)' };
-  fbDiv.textContent = (result.status === 'ok' ? '✅ ' : result.status === 'warn' ? '⚠️ ' : '🚨 ') + result.message;
-  fbDiv.style.color = colors[result.status];
-  input.style.borderColor = colors[result.status];
-
-  // Check all fields for blocking
-  checkBlockingStatus();
+  const icon = result.status==='ok'?'✅ ':result.status==='warn'?'⚠️ ':'🚨 ';
+  fbDiv.textContent = icon + result.message;
+  fbDiv.style.color = COLOR[result.status];
+  input.style.borderColor = COLOR[result.status];
+  checkBlocking();
 };
 
-function checkBlockingStatus() {
+function checkBlocking() {
   const blockDiv = document.getElementById('blockingAlert');
   const blockMsg = document.getElementById('blockingMsg');
-  const submitBtn = document.getElementById('submitBtn');
-  let blockingMessage = null;
-  for (const key of Object.keys(CTQ_PARAMS)) {
+  let msg = null;
+  for (const key of CTQ_KEYS) {
     const input = document.getElementById(key);
-    if (!input || !input.value) continue;
+    if (!input || input.value === '') continue;
     const r = evaluateCTQ(key, parseFloat(input.value));
-    if (r.blocking && r.status === 'critical') { blockingMessage = r.message; break; }
+    if (r.blocking && r.status === 'critical') { msg = r.message; break; }
   }
-  if (blockingMessage) {
-    blockDiv.style.display='flex'; blockMsg.textContent=blockingMessage;
-  } else {
-    blockDiv.style.display='none';
-  }
+  if (msg) { blockDiv.style.display='flex'; blockMsg.textContent=msg; }
+  else { blockDiv.style.display='none'; }
 }
 
 window.resetFeedbacks = function() {
-  Object.keys(CTQ_PARAMS).forEach(key => {
+  CTQ_KEYS.forEach(key => {
     const fb = document.getElementById(key + '_feedback');
     const inp = document.getElementById(key);
     if (fb) { fb.textContent=''; fb.style.color=''; }
@@ -229,44 +309,31 @@ window.resetFeedbacks = function() {
   document.getElementById('blockingAlert').style.display='none';
 };
 
+// ── Submit ───────────────────────────────────────────────────
 window.handleSubmit = async function(e) {
   e.preventDefault();
   const loteId = loteSelect.value;
   if (!loteId) { showToast('Selecciona un estanque primero', 'warn'); return; }
 
   const record = {
-    id: `agua-${Date.now()}`,
-    id_lote: loteId,
-    id_tenant: session.id_tenant || 'tenant-001',
-    fecha: new Date().toISOString().slice(0,10),
-    sync_status: 'pending'
+    id: `agua-${Date.now()}`, id_lote: loteId, id_tenant: session.id_tenant || 'tenant-001',
+    fecha: new Date().toISOString().slice(0,10), sync_status: 'pending'
   };
-
   let hasValue = false;
-  for (const key of Object.keys(CTQ_PARAMS)) {
+  for (const key of CTQ_KEYS) {
     const v = document.getElementById(key)?.value;
     if (v !== '' && v !== undefined) { record[key] = parseFloat(v); hasValue = true; }
   }
   record.observaciones = document.getElementById('observaciones').value;
-
   if (!hasValue) { showToast('Ingresa al menos un parámetro', 'warn'); return; }
 
   const evaluation = evaluateWaterReading(record);
+  await put('registros_agua', record);
 
-  try {
-    await put('registros_agua', record);
-    const msg = evaluation.systemStatus === 'critical'
-      ? '🚨 Lectura guardada — Parámetros CRÍTICOS detectados. Actúa de inmediato.'
-      : evaluation.systemStatus === 'warn'
-      ? '⚠️ Lectura guardada — Revisa los parámetros en alerta.'
-      : '✅ Lectura guardada correctamente.';
-    showToast(msg, evaluation.systemStatus === 'ok' ? 'ok' : evaluation.systemStatus);
-    e.target.reset();
-    resetFeedbacks();
-    await loadHistory(loteId);
-  } catch(err) {
-    showToast('Error al guardar: ' + err.message, 'critical');
-  }
+  const msgMap = { critical:'🚨 Guardado — Parámetros CRÍTICOS. Actúa de inmediato.', warn:'⚠️ Guardado — Revisa los parámetros en alerta.', ok:'✅ Lectura guardada correctamente.' };
+  showToast(msgMap[evaluation.systemStatus], evaluation.systemStatus);
+  e.target.reset(); resetFeedbacks();
+  await loadHistory(loteId);
 };
 </script>
 </body>

@@ -1,38 +1,53 @@
 /**
  * AQUASHELL — sidebar.js v3.0
- * Renders sidebar and handles offline detection
+ * Inyecta estado del usuario en el sidebar y oculta ítems por rol
  */
-import { clearSession } from './auth.js';
+import { ROLES } from './auth.js';
 
-export function injectSidebar() {
-  const tpl = document.getElementById('sidebarTemplate');
-  if (!tpl) return;
-  document.body.insertBefore(tpl.content.cloneNode(true), document.body.firstChild);
+export function initSidebar(session) {
+  const role = session.rol;
 
-  // Mobile toggle
-  const btn = document.getElementById('mobileMenuBtn');
+  // Avatar / nombre / badge
+  const avatar = document.getElementById('sidebarUserAvatar');
+  const name   = document.getElementById('sidebarUserName');
+  const badge  = document.getElementById('sidebarUserRole');
+  if (avatar) avatar.textContent = (session.nombre || 'U')[0].toUpperCase();
+  if (name)   name.textContent   = session.nombre || '—';
+  if (badge)  badge.innerHTML    = `<span class="user-role-badge ${ROLES[role]?.color || ''}">${ROLES[role]?.label || role}</span>`;
+
+  // Ocultar ítems de nav según rol
+  const hide = (id) => { const el = document.getElementById(id); if (el) el.style.display = 'none'; };
+
+  if (role === 'operario') {
+    hide('navFarms');
+    hide('navBiometry');
+    hide('navInputs');
+    hide('navReports');
+  }
+  if (role === 'asesor') {
+    hide('navFarms');
+    hide('navBiometry');
+    hide('navInputs');
+  }
+
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('mobileMenuBtn');
   const sidebar = document.getElementById('mainSidebar');
-  if (btn && sidebar) btn.addEventListener('click', () => sidebar.classList.toggle('open'));
+  if (menuBtn && sidebar) menuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
 
   // Logout
-  document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    clearSession();
-    window.location.href = '../index.html';
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) logoutBtn.addEventListener('click', e => {
+    e.preventDefault(); sessionStorage.clear(); window.location.href = '../index.html';
   });
 
-  // Online/offline indicator
+  // Sync indicator
+  const dot   = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
   function updateSync() {
-    const dot   = document.getElementById('syncDot');
-    const label = document.getElementById('syncLabel');
     if (!dot || !label) return;
-    if (navigator.onLine) {
-      dot.className   = 'sync-dot';
-      label.textContent = 'En línea';
-    } else {
-      dot.className   = 'sync-dot offline';
-      label.textContent = 'Sin conexión';
-    }
+    if (navigator.onLine) { dot.className='sync-dot'; label.textContent='En línea'; }
+    else { dot.className='sync-dot offline'; label.textContent='Sin conexión'; }
   }
   updateSync();
   window.addEventListener('online',  updateSync);
