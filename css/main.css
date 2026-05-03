@@ -267,6 +267,44 @@ tr:hover td { background: rgba(255,255,255,0.02); color: var(--text-primary); }
 .empty-state-icon { font-size: 48px; margin-bottom: var(--space-4); }
 .empty-state h3 { font-family: var(--font-brand); font-weight: 700; font-size: var(--text-lg); color: var(--text-secondary); margin-bottom: var(--space-2); }
 
+/* ── Alert bloqueado ── */
+.alert.bloqueado { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.4); }
+
+/* ── Role badges ── */
+.user-role-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: var(--radius-full); font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.role-operario    { background: rgba(34,197,94,0.15);   color: #22C55E; border: 1px solid rgba(34,197,94,0.3); }
+.role-coordinador { background: rgba(245,158,11,0.15);  color: #F59E0B; border: 1px solid rgba(245,158,11,0.3); }
+.role-gerente     { background: rgba(69,196,176,0.15);  color: var(--color-cyan); border: 1px solid var(--border-cyan); }
+.role-asesor      { background: rgba(129,140,248,0.15); color: #818CF8; border: 1px solid rgba(129,140,248,0.3); }
+.role-superadmin  { background: rgba(239,68,68,0.15);   color: #EF4444; border: 1px solid rgba(239,68,68,0.3); }
+
+/* ── Extra button variants ── */
+.btn-danger { background: var(--color-critical); color: #fff; border: none; }
+.btn-danger:hover { background: #DC2626; }
+.btn-warn { background: var(--color-warn); color: #fff; border: none; }
+.btn-warn:hover { background: #D97706; }
+.btn-full { width: 100%; }
+
+/* ── Table extra cells ── */
+.td-ok   { color: var(--color-ok);   font-weight: 700; }
+.td-cyan { color: var(--color-cyan); font-weight: 600; }
+
+/* ── KPI extras ── */
+.kpi-value.gold { color: var(--color-gold); }
+.kpi-unit { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+
+/* ── Sync indicator ── */
+.sync-dot.offline { background: var(--color-critical); box-shadow: 0 0 6px var(--color-critical); }
+
+/* ── Form extras ── */
+.form-required { color: var(--color-critical); }
+.form-hint { font-size: var(--text-xs); color: var(--text-muted); margin-top: 4px; }
+.form-textarea { width: 100%; min-height: 80px; padding: var(--space-3) var(--space-4); background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-primary); font-family: var(--font-ui); font-size: var(--text-sm); resize: vertical; transition: border-color var(--transition-fast); }
+.form-textarea:focus { outline: none; border-color: var(--color-cyan); }
+.input-unit { position: relative; display: flex; align-items: center; }
+.input-unit .form-input { flex: 1; padding-right: 56px; }
+.unit-label { position: absolute; right: 12px; font-size: var(--text-xs); color: var(--text-muted); font-weight: 600; pointer-events: none; white-space: nowrap; }
+
 /* ── Retiro Badge ── */
 .retiro-badge { display: inline-flex; align-items: center; gap: var(--space-2); background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: var(--color-critical); font-size: var(--text-xs); font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); animation: retiroPulse 2s infinite; }
 @keyframes retiroPulse { 0%,100%{opacity:1} 50%{opacity:0.7} }

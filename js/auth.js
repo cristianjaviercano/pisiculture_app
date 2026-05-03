@@ -3,7 +3,7 @@
  * Autenticación RBAC simulada — CU-AQUA-01
  */
 
-import { getAll, put, openDB } from './db.js';
+import { getAll } from './db.js';
 
 const SESSION_KEY = 'aq_session';
 const FARM_KEY    = 'aq_active_farm';
