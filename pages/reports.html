@@ -55,7 +55,7 @@
 <div id="toastContainer"></div>
 
 <script type="module">
-import { openDB, seedDemoData, getFincas, getEstanques, getActiveLoteByEstanque, getRegistrosAgua, getRegistrosAlim, getRegistrosMort, getMuestreos } from '../js/db.js';
+import { openDB, seedDemoData, getFincas, getEstanques, getLotesByEstanque, getRegistrosAgua, getRegistrosAlim, getRegistrosMort, getMuestreos } from '../js/db.js';
 import { ROLES, showToast, daysSince, formatDate, formatCOP, formatNum } from '../js/auth.js';
 import { calculateFCA, calculateLMax, evaluateMortality, calculateCycleROI, SPECIES_CONFIG, estimateHarvestDate } from '../js/biomassEngine.js';
 import { evaluateWaterReading } from '../js/waterQuality.js';
@@ -80,18 +80,28 @@ await openDB(); await seedDemoData();
 const fincas = await getFincas(session.id_tenant || 'tenant-001');
 const target = activeFarmId ? fincas.filter(f=>f.id===activeFarmId) : fincas;
 const loteSelect = document.getElementById('loteSelect');
-loteSelect.innerHTML = '<option value="">— Selecciona estanque —</option>';
 let lotesMap = {};
+let activesHtml = '';
+let harvestedHtml = '';
 
 for (const finca of target) {
   const ests = await getEstanques(finca.id);
   for (const est of ests) {
-    const lote = await getActiveLoteByEstanque(est.id);
-    if (!lote || lote.estado !== 'activo') continue;
-    loteSelect.innerHTML += `<option value="${lote.id}">${est.nombre} — ${finca.nombre}</option>`;
-    lotesMap[lote.id] = { lote, est, finca };
+    const lotes = await getLotesByEstanque(est.id);
+    for (const lote of lotes) {
+      if (lote.estado === 'activo') {
+        activesHtml += `<option value="${lote.id}">${est.nombre} — Activo</option>`;
+      } else if (lote.estado === 'cosechado') {
+        harvestedHtml += `<option value="${lote.id}">${est.nombre} — Cosecha ${lote.fecha_cosecha}</option>`;
+      }
+      lotesMap[lote.id] = { lote, est, finca };
+    }
   }
 }
+
+loteSelect.innerHTML = `<option value="">— Selecciona estanque/ciclo —</option>
+  <optgroup label="🟢 Ciclos Activos">${activesHtml}</optgroup>
+  <optgroup label="🌾 Histórico (Cosechados)">${harvestedHtml}</optgroup>`;
 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('lote')) { loteSelect.value = urlParams.get('lote'); await generarInforme(); }
@@ -106,13 +116,15 @@ window.generarInforme = async function() {
     getRegistrosAgua(loteId), getRegistrosAlim(loteId), getRegistrosMort(loteId), getMuestreos(loteId)
   ]);
 
-  const dias = daysSince(lote.fecha_inicio);
+  const isCosechado = lote.estado === 'cosechado';
+  const dias = isCosechado ? daysSince(lote.fecha_inicio, lote.fecha_cosecha) : daysSince(lote.fecha_inicio);
   const biomIni = lote.count_inicial * lote.peso_inicial_g / 1000;
-  const biomCur = lote.count_actual  * lote.peso_actual_g  / 1000;
+  const biomCur = isCosechado ? (lote.biomasa_cosechada_kg || 0) : (lote.count_actual * lote.peso_actual_g / 1000);
   const fca = calculateFCA(lote.total_alimento_kg, biomIni, biomCur);
-  const pctSurv = ((lote.count_actual / lote.count_inicial) * 100).toFixed(1);
-  const totalMorts = lote.count_inicial - lote.count_actual;
-  const harvest = estimateHarvestDate(lote.peso_actual_g, dias, lote.fecha_inicio, lote.especie);
+  const currentCount = isCosechado ? (lote.peces_cosechados || lote.count_actual) : lote.count_actual;
+  const pctSurv = ((currentCount / lote.count_inicial) * 100).toFixed(1);
+  const totalMorts = lote.count_inicial - currentCount;
+  const harvest = isCosechado ? null : estimateHarvestDate(lote.peso_actual_g, dias, lote.fecha_inicio, lote.especie);
 
   // Financial KPIs (gerente only)
   const roi = ['gerente','superadmin'].includes(role) ? calculateCycleROI({
@@ -135,13 +147,13 @@ window.generarInforme = async function() {
       <div class="card-body">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
           <div>
-            <div style="font-family:var(--font-brand);font-size:var(--text-xl);font-weight:800;color:var(--color-cyan)">${est.nombre}</div>
+            <div style="font-family:var(--font-brand);font-size:var(--text-xl);font-weight:800;color:var(--color-cyan)">${est.nombre} ${isCosechado?'(Cosechado) ':''}</div>
             <div style="font-size:13px;color:var(--text-muted);margin-top:4px">${finca.nombre} · ${sp.name} (${lote.especie})</div>
-            <div style="font-size:12px;color:var(--text-muted)">Inicio: ${formatDate(lote.fecha_inicio)} · Día ${dias} del ciclo</div>
+            <div style="font-size:12px;color:var(--text-muted)">Inicio: ${formatDate(lote.fecha_inicio)} ${isCosechado ? `· Cosecha: ${formatDate(lote.fecha_cosecha)}` : `· Día ${dias} del ciclo`}</div>
           </div>
           <div style="text-align:right">
             <div style="font-family:var(--font-brand);font-size:var(--text-3xl);font-weight:800;color:var(--color-cyan)">${dias}</div>
-            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Días en ciclo</div>
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">${isCosechado?'Días de ciclo':'Días en ciclo'}</div>
           </div>
         </div>
       </div>
@@ -150,14 +162,14 @@ window.generarInforme = async function() {
     <!-- KPIs principales -->
     <div class="kpi-grid mb-6" style="margin-bottom:var(--space-6)">
       <div class="kpi-card">
-        <div class="kpi-label">Peces Actuales</div>
-        <div class="kpi-value cyan">${lote.count_actual.toLocaleString()}</div>
+        <div class="kpi-label">${isCosechado?'Peces Cosechados':'Peces Actuales'}</div>
+        <div class="kpi-value cyan">${currentCount.toLocaleString()}</div>
         <div class="kpi-delta neutral">de ${lote.count_inicial.toLocaleString()} sembrados</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Biomasa Total</div>
+        <div class="kpi-label">${isCosechado?'Biomasa Cosechada':'Biomasa Total'}</div>
         <div class="kpi-value">${biomCur.toFixed(1)} kg</div>
-        <div class="kpi-delta neutral">Peso prom: ${lote.peso_actual_g} g</div>
+        <div class="kpi-delta neutral">Peso prom: ${isCosechado?(lote.peso_cosecha_g||lote.peso_actual_g):lote.peso_actual_g} g</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">FCA Acumulado</div>
@@ -175,9 +187,9 @@ window.generarInforme = async function() {
         <div class="kpi-delta neutral">${alims.length} raciones registradas</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Días a Cosecha</div>
-        <div class="kpi-value gold">${harvest.days_remaining ?? '—'}</div>
-        <div class="kpi-delta neutral">${harvest.date ? 'Aprox: ' + formatDate(harvest.date.toISOString().slice(0,10)) : 'No proyectado'}</div>
+        <div class="kpi-label">${isCosechado?'Días de Ciclo':'Días a Cosecha'}</div>
+        <div class="kpi-value gold">${isCosechado?dias:(harvest.days_remaining ?? '—')}</div>
+        <div class="kpi-delta neutral">${isCosechado?('Cosecha: '+lote.destino_cosecha):(harvest.date ? 'Aprox: ' + formatDate(harvest.date.toISOString().slice(0,10)) : 'No proyectado')}</div>
       </div>
     </div>
 

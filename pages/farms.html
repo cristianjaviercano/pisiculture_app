@@ -66,6 +66,37 @@
         </div>
       </form>
     </div>
+</div>
+</div>
+
+<!-- Cosechar Lote Modal (Fase 5) -->
+<div class="modal-overlay" id="cosechaModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">🌾 Registrar Cosecha (Fase 5)</span><button class="modal-close" onclick="document.getElementById('cosechaModal').classList.remove('open')">×</button></div>
+    <div class="modal-body">
+      <form id="cosechaForm" onsubmit="handleCosechar(event)">
+        <input type="hidden" id="cosechaLoteId"/>
+        <div class="alert info" style="margin-bottom:var(--space-4);font-size:12px">
+          <span>ℹ️</span><div>Registra los datos finales de biomasa extraída y cierra el ciclo de este lote.</div>
+        </div>
+        <div class="grid-2" style="gap:var(--space-4)">
+          <div class="form-group" style="margin:0"><label class="form-label">Fecha de Cosecha</label><input type="date" class="form-input" id="cosechaFecha" required/></div>
+          <div class="form-group" style="margin:0"><label class="form-label">Destino / Cliente</label><input type="text" class="form-input" id="cosechaDestino" placeholder="Mercado local, Exportación..." required/></div>
+        </div>
+        <div class="grid-2" style="gap:var(--space-4);margin-top:var(--space-4)">
+          <div class="form-group" style="margin:0"><label class="form-label">Peces Extraídos (und)</label><input type="number" class="form-input" id="cosechaPeces" min="1" placeholder="Ej. 980" required/></div>
+          <div class="form-group" style="margin:0"><label class="form-label">Peso Promedio (g)</label><input type="number" class="form-input" id="cosechaPeso" min="1" step="0.1" placeholder="Ej. 450" required/></div>
+        </div>
+        <div class="form-group mt-4" style="margin-top:var(--space-4)">
+          <label class="form-label">Biomasa Total Extraída (kg)</label>
+          <input type="number" class="form-input" id="cosechaBiomasa" readonly style="background:var(--bg-card)"/>
+        </div>
+        <div class="modal-footer" style="padding:0;margin-top:var(--space-4)">
+          <button type="button" class="btn btn-ghost" onclick="document.getElementById('cosechaModal').classList.remove('open')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="background:var(--color-gold);color:#000;border-color:var(--color-gold)">🌾 Cerrar Ciclo</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -79,7 +110,8 @@ import { evaluateWaterReading } from '../js/waterQuality.js';
 
 const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
 if (!session) { window.location.href = '../index.html'; }
-if (!['gerente','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
+// Coordinador plans and executes harvests/seeds; Gerente views them
+if (!['coordinador','gerente','asesor','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
 
 const role = session.rol;
 document.getElementById('sidebarUserAvatar').textContent = session.nombre[0];
@@ -195,13 +227,51 @@ window.handleSembrar = async function(e) {
 };
 
 window.cosechar = async function(loteId, nombre) {
-  if (!confirm(`¿Confirmas la cosecha de ${nombre}? El lote pasará a estado "cosechado" y el estanque quedará vacío.`)) return;
   const { getById } = await import('../js/db.js');
   const lote = await getById('lotes', loteId);
   if (!lote) return;
-  lote.estado = 'cosechado'; lote.fecha_cosecha = new Date().toISOString().slice(0,10);
+  document.getElementById('cosechaLoteId').value = loteId;
+  document.getElementById('cosechaFecha').value = new Date().toISOString().slice(0,10);
+  document.getElementById('cosechaPeces').value = lote.count_actual;
+  document.getElementById('cosechaPeso').value = lote.peso_actual_g;
+  document.getElementById('cosechaBiomasa').value = (lote.count_actual * lote.peso_actual_g / 1000).toFixed(1);
+  
+  // Auto update biomass field
+  const updateBiom = () => {
+    const p = document.getElementById('cosechaPeces').value;
+    const w = document.getElementById('cosechaPeso').value;
+    if(p && w) document.getElementById('cosechaBiomasa').value = (p * w / 1000).toFixed(1);
+  };
+  document.getElementById('cosechaPeces').addEventListener('input', updateBiom);
+  document.getElementById('cosechaPeso').addEventListener('input', updateBiom);
+
+  document.getElementById('cosechaModal').classList.add('open');
+};
+
+window.handleCosechar = async function(e) {
+  e.preventDefault();
+  const loteId = document.getElementById('cosechaLoteId').value;
+  const fecha = document.getElementById('cosechaFecha').value;
+  const destino = document.getElementById('cosechaDestino').value;
+  const peces = parseInt(document.getElementById('cosechaPeces').value);
+  const peso = parseFloat(document.getElementById('cosechaPeso').value);
+  const biomasa = parseFloat(document.getElementById('cosechaBiomasa').value);
+
+  const { getById, put } = await import('../js/db.js');
+  const lote = await getById('lotes', loteId);
+  if (!lote) return;
+
+  lote.estado = 'cosechado';
+  lote.fecha_cosecha = fecha;
+  lote.destino_cosecha = destino;
+  lote.peces_cosechados = peces;
+  lote.peso_cosecha_g = peso;
+  lote.biomasa_cosechada_kg = biomasa;
+  lote.sync_status = 'pending';
+
   await put('lotes', lote);
-  showToast(`✅ Cosecha registrada para ${nombre}`, 'ok');
+  showToast(`✅ Ciclo cerrado y lote cosechado exitosamente`, 'ok');
+  document.getElementById('cosechaModal').classList.remove('open');
   setTimeout(() => window.location.reload(), 1000);
 };
 </script>
