@@ -23,7 +23,7 @@
       <a href="dashboard.html" class="nav-item active" data-page="dashboard">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard
       </a>
-      <a href="farms.html" class="nav-item" data-page="farms">
+      <a href="farms.html" class="nav-item" id="navFarms" data-page="farms">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Mis Fincas
       </a>
       <div class="nav-section">OPERACIONES</div>
@@ -113,15 +113,17 @@ function updateSync() {
 }
 updateSync(); window.addEventListener('online', updateSync); window.addEventListener('offline', updateSync);
 
-// Hide restricted nav
+// Hide restricted nav — Operario: solo ve operaciones de campo
 if (role === 'operario') {
-  document.getElementById('navBiometry').style.display = 'none';
-  document.getElementById('navInputs').style.display   = 'none';
-  document.getElementById('navReports').style.display  = 'none';
+  ['navFarms','navInputs','navReports'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
+  // navBiometry: VISIBLE — el operario ejecuta el muestreo físico
 }
 if (role === 'asesor') {
-  document.getElementById('navBiometry').style.display = 'none';
-  document.getElementById('navInputs').style.display   = 'none';
+  ['navFarms','navInputs'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.style.display = 'none';
+  });
 }
 
 // ── Load data ───────────────────────────────────────────────
@@ -168,7 +170,43 @@ if (role === 'operario') {
         <div>Tienes <strong>${estList.filter(e=>e.lote?.estado==='activo').length} estanques activos</strong> para monitorear hoy.</div>
       </div>
     </div>
-    <div class="mb-4"><h2 style="font-family:var(--font-brand);font-size:var(--text-lg);font-weight:700;color:var(--text-primary);margin-bottom:var(--space-4)">📋 Checklist del Día</h2></div>
+
+    <!-- Rutina diaria del operario (Fase 3 del ciclo) -->
+    <div class="card mb-6" style="margin-bottom:var(--space-6);border-color:var(--border-cyan)">
+      <div class="card-header">
+        <div class="card-title">📋 Rutina Diaria — Fase 3</div>
+        <span style="font-size:11px;color:var(--text-muted)">Confirma cada actividad al completarla</span>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${[
+            { id:'t1', icon:'👞', label:'Bioseguridad e higiene', hint:'Pediluvio • Lavado de manos • Botas desinfectadas', link:null },
+            { id:'t2', icon:'👀', label:'Inspección visual del comportamiento', hint:'Buscar nado errático, boqueo, peces aislados', link:null },
+            { id:'t3', icon:'💧', label:'Monitoreo de calidad del agua', hint:'Temp • OD • pH • TAN • NO₂', link:'water-quality.html' },
+            { id:'t4', icon:'🌾', label:'Alimentación supervisada', hint:'Suministrar ración • Retirar sobrante a los 15 min', link:'feeding.html' },
+            { id:'t5', icon:'☠️', label:'Retiro de mortalidades', hint:'Sacar peces muertos • Registrar causa y cantidad', link:'mortality.html' },
+            { id:'t6', icon:'📓', label:'Cierre de bitácora del día', hint:'Todos los registros ingresados y firmados', link:null },
+          ].map(t => `
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg-input);border-radius:var(--radius-md);border:1px solid var(--border-color)" id="task-${t.id}">
+              <input type="checkbox" id="cb-${t.id}" style="width:18px;height:18px;accent-color:var(--color-cyan);flex-shrink:0;cursor:pointer" onchange="toggleTask('${t.id}')">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:600;color:var(--text-primary)">${t.icon} ${t.label}</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${t.hint}</div>
+              </div>
+              ${t.link ? `<a href="${t.link}" class="btn btn-ghost btn-sm" style="flex-shrink:0">Ir →</a>` : ''}
+            </div>
+          `).join('')}
+        </div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:6px;background:var(--border-color);border-radius:var(--radius-full);overflow:hidden">
+            <div id="progressBar" style="height:100%;background:var(--color-cyan);border-radius:var(--radius-full);transition:width 0.4s ease;width:0%"></div>
+          </div>
+          <span id="progressLabel" style="font-size:11px;color:var(--text-muted);white-space:nowrap">0/6 completadas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4"><h2 style="font-family:var(--font-brand);font-size:var(--text-lg);font-weight:700;color:var(--text-primary);margin-bottom:var(--space-4)">🐟 Estado de Estanques</h2></div>
     <div class="grid-auto">
       ${estList.map(({est, lote, waterEval, fca, retiro}) => {
         if (!lote || lote.estado !== 'activo') return `
@@ -311,6 +349,21 @@ else {
         </div>`).join('')}
     </div>`;
 }
+// ── Checklist progress (Operario) ───────────────────────────
+window.toggleTask = function(id) {
+  const box  = document.getElementById(`task-${id}`);
+  const cb   = document.getElementById(`cb-${id}`);
+  if (!box || !cb) return;
+  box.style.background     = cb.checked ? 'rgba(69,196,176,0.08)' : 'var(--bg-input)';
+  box.style.borderColor    = cb.checked ? 'var(--color-cyan)'      : 'var(--border-color)';
+  box.style.opacity        = cb.checked ? '0.7' : '1';
+  const all   = document.querySelectorAll('[id^="cb-t"]');
+  const done  = [...all].filter(c => c.checked).length;
+  const bar   = document.getElementById('progressBar');
+  const label = document.getElementById('progressLabel');
+  if (bar)   bar.style.width = `${(done/all.length)*100}%`;
+  if (label) label.textContent = `${done}/${all.length} completadas`;
+};
 </script>
 </body>
 </html>
