@@ -52,10 +52,35 @@
         <div class="card">
           <div class="card-header"><div class="card-title">⚖️ Ingresar Pesos del Muestreo</div></div>
           <div class="card-body">
+            <div class="alert info" style="margin-bottom:var(--space-4);font-size:12px">
+              <span>🕐</span><div>Realizar en horas frescas (mañana). Muestra mín. 5-10% del lote. Pesar dentro del agua.</div>
+            </div>
+            <div class="grid-2" style="gap:var(--space-4)">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">⚖️ Pesos (g) — uno por línea</label>
+                <textarea class="form-textarea" id="pesosInput" rows="8" placeholder="120&#10;135&#10;118&#10;142&#10;128..."></textarea>
+                <div class="form-hint">Gramos por individuo. Mín. 10 peces.</div>
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">📏 Tallas (cm) — uno por línea <span style="color:var(--text-muted);font-weight:400">(opcional)</span></label>
+                <textarea class="form-textarea" id="tallasInput" rows="8" placeholder="22.5&#10;24.1&#10;21.8&#10;25.0&#10;23.3..."></textarea>
+                <div class="form-hint">Longitud total con ictiómetro (cm).</div>
+              </div>
+            </div>
             <div class="form-group">
-              <label class="form-label">Pesos individuales (g) — mín. 10 peces</label>
-              <textarea class="form-textarea" id="pesosInput" rows="6" placeholder="Ingresa un peso por línea o separados por coma:&#10;120&#10;135&#10;118&#10;142..."></textarea>
-              <div class="form-hint">Ingresa cada peso en gramos, uno por línea. Mínimo 10 peces, recomendado 20-50.</div>
+              <label class="form-label">👁️ Inspección visual de salud</label>
+              <select class="form-select" id="saludGeneral">
+                <option value="normal">✅ Normal — peces activos, color uniforme</option>
+                <option value="alerta">⚠️ Alerta — algunos peces lentos o con manchas</option>
+                <option value="critico">🚨 Crítico — comportamiento anormal, lesiones visibles</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">📐 ¿Se requiere desdoble?</label>
+              <select class="form-select" id="desdoble">
+                <option value="no">No — tallas homogéneas</option>
+                <option value="si">Sí — disparidad de tamaños detectada</option>
+              </select>
             </div>
             <button class="btn btn-primary" onclick="calcularMuestra()">📊 Calcular Estadísticas</button>
           </div>
@@ -108,7 +133,8 @@ import { calculateBiometrySample, calculateLMax, SPECIES_CONFIG } from '../js/bi
 const session = JSON.parse(sessionStorage.getItem('aq_session') || 'null');
 if (!session) { window.location.href = '../index.html'; }
 // Only coordinador+ can access
-if (!['coordinador','gerente','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
+// Operario ejecuta el muestreo en campo — todos los roles con acceso operativo
+if (!['operario','coordinador','gerente','asesor','superadmin'].includes(session.rol)) { window.location.href = 'dashboard.html'; }
 
 const activeFarmId = sessionStorage.getItem('aq_active_farm');
 const role = session.rol;
@@ -120,7 +146,7 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => documen
 document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
 function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
 updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
-if (role === 'operario') { ['navFarms','navBiometry','navInputs','navReports'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
+if (role === 'operario') { ['navFarms','navInputs','navReports'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
 
 await openDB(); await seedDemoData();
 
@@ -201,8 +227,8 @@ window.guardarMuestra = async function() {
   const loteId = loteSelect.value;
   if (!loteId) { showToast('Selecciona un estanque', 'warn'); return; }
 
-  const raw = document.getElementById('pesosInput').value;
-  const weights = raw.split(/[\n,;]+/).map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v)&&v>0);
+  const rawTallas = document.getElementById('tallasInput')?.value || '';
+  const tallas = rawTallas.split(/[\n,;]+/).map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v)&&v>0);
 
   const record = {
     id: `bio-${Date.now()}`,
@@ -211,13 +237,18 @@ window.guardarMuestra = async function() {
     fecha: new Date().toISOString().slice(0,10),
     n: currentResult.n,
     pesos_g: weights,
-    mean_g: currentResult.mean_g,
+    tallas_cm: tallas.length > 0 ? tallas : null,
+    mean_peso_g: currentResult.mean_g,
+    mean_talla_cm: tallas.length > 0 ? parseFloat((tallas.reduce((a,b)=>a+b,0)/tallas.length).toFixed(1)) : null,
     std_g: currentResult.std_g,
     cv_pct: currentResult.cv_pct,
     min_g: currentResult.min_g,
     max_g: currentResult.max_g,
     valid: currentResult.valid,
+    salud_visual: document.getElementById('saludGeneral')?.value || 'normal',
+    requiere_desdoble: document.getElementById('desdoble')?.value === 'si',
     observaciones: document.getElementById('muestreoObs').value,
+    registrado_por: session.nombre,
     sync_status: 'pending'
   };
   await put('muestreos_bio', record);

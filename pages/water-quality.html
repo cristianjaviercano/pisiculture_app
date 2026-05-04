@@ -212,9 +212,9 @@ document.getElementById('formDate').textContent = new Date().toLocaleDateString(
 // Ocultar nav según rol
 if (role === 'operario') {
   document.getElementById('navFarms').style.display    = 'none';
-  document.getElementById('navBiometry').style.display = 'none';
   document.getElementById('navInputs').style.display   = 'none';
   document.getElementById('navReports').style.display  = 'none';
+  // navBiometry visible — el operario ejecuta el muestreo en campo
 }
 
 // Sync status

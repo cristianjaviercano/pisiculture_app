@@ -135,7 +135,7 @@ document.getElementById('mobileMenuBtn').addEventListener('click', () => documen
 document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); sessionStorage.clear(); window.location.href='../index.html'; });
 function updateSync(){const d=document.getElementById('syncDot'),l=document.getElementById('syncLabel');if(navigator.onLine){d.className='sync-dot';l.textContent='En línea';}else{d.className='sync-dot offline';l.textContent='Sin conexión';}}
 updateSync(); window.addEventListener('online',updateSync); window.addEventListener('offline',updateSync);
-if (role === 'operario') { ['navFarms','navBiometry','navInputs','navReports'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
+if (role === 'operario') { ['navFarms','navInputs','navReports'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
 
 await openDB(); await seedDemoData();
 

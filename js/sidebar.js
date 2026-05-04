@@ -20,9 +20,9 @@ export function initSidebar(session) {
 
   if (role === 'operario') {
     hide('navFarms');
-    hide('navBiometry');
     hide('navInputs');
     hide('navReports');
+    // navBiometry visible — el operario ejecuta el muestreo físico
   }
   if (role === 'asesor') {
     hide('navFarms');
