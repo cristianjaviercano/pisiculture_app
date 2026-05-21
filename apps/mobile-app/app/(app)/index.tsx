@@ -94,6 +94,7 @@ export default function Dashboard() {
           <View style={styles.empty}>
             <Text style={styles.emptyIcon}>🐠</Text>
             <Text style={styles.emptyText}>No hay lotes activos</Text>
+            <Text style={styles.emptyHint}>Toca + para iniciar un nuevo ciclo</Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -128,6 +129,14 @@ export default function Dashboard() {
           </TouchableOpacity>
         )}
       />
+
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push('/(app)/lote/nuevo')}
+        activeOpacity={0.85}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -165,4 +174,10 @@ const styles = StyleSheet.create({
   empty:        { alignItems: 'center', paddingTop: 80 },
   emptyIcon:    { fontSize: 48 },
   emptyText:    { color: C.muted, marginTop: S.md, fontSize: 15 },
+  emptyHint:    { color: C.muted, marginTop: S.xs, fontSize: 13 },
+  fab:          { position: 'absolute', bottom: 28, right: 24,
+                  width: 56, height: 56, borderRadius: 28,
+                  backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center',
+                  shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 8, elevation: 6 },
+  fabText:      { color: C.white, fontSize: 30, lineHeight: 34, fontWeight: '300' },
 });
