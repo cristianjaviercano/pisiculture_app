@@ -326,3 +326,148 @@ describe('calculateCycleROI', () => {
     assert.equal(r.profitable, false);
   });
 });
+
+// ── INSUMO_APLICADO — período de retiro ────────────────────────────────────
+
+describe('projectLote — INSUMO_APLICADO', () => {
+  const makeInsumoEvents = (fechaFinRetiro: string): OperationalEvent[] => [
+    {
+      id: 'r-1', type: 'LOTE_INICIADO', id_lote: 'retiro-test',
+      id_tenant: 't1', id_usuario: 'u1', ts: '2025-01-01T00:00:00Z', sync_status: 'synced',
+      payload: { especie: 'tilapia_nilotica', count_inicial: 500, peso_inicial_g: 20,
+                 id_estanque: 'e1', id_finca: 'f1', unidad_costo_cop: 350 },
+    },
+    {
+      id: 'r-2', type: 'INSUMO_APLICADO', id_lote: 'retiro-test',
+      id_tenant: 't1', id_usuario: 'u1', ts: '2025-01-10T00:00:00Z', sync_status: 'synced',
+      payload: { id_insumo: 'ins-001', cantidad_aplicada: 50, unidad: 'g',
+                 motivo_aplicacion: 'tratamiento', periodo_retiro_dias: 12, fecha_fin_retiro: fechaFinRetiro },
+    },
+  ];
+
+  it('activa retiro_activo cuando fecha_fin_retiro es futura', () => {
+    const future = new Date(Date.now() + 15 * 86_400_000).toISOString().slice(0, 10);
+    const state = projectLote(makeInsumoEvents(future));
+    assert.equal(state?.retiro_activo, true);
+    assert.equal(state?.fecha_fin_retiro, future);
+  });
+
+  it('no activa retiro_activo cuando fecha_fin_retiro ya pasó', () => {
+    const past = '2020-01-01';
+    const state = projectLote(makeInsumoEvents(past));
+    assert.equal(state?.retiro_activo, false);
+  });
+});
+
+// ── LOTE_COSECHADO ─────────────────────────────────────────────────────────
+
+describe('projectLote — LOTE_COSECHADO', () => {
+  it('marca cosechado y registra biomasa cosechada', () => {
+    const eventos: OperationalEvent[] = [
+      {
+        id: 'h-1', type: 'LOTE_INICIADO', id_lote: 'harvest-test',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-01-01T00:00:00Z', sync_status: 'synced',
+        payload: { especie: 'tilapia_nilotica', count_inicial: 1000, peso_inicial_g: 5,
+                   id_estanque: 'e1', id_finca: 'f1', unidad_costo_cop: 350 },
+      },
+      {
+        id: 'h-2', type: 'LOTE_COSECHADO', id_lote: 'harvest-test',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-06-01T00:00:00Z', sync_status: 'synced',
+        payload: { biomasa_cosechada_kg: 350, precio_venta_cop_kg: 8000 },
+      },
+    ];
+    const state = projectLote(eventos);
+    assert.equal(state?.cosechado, true);
+    assert.equal(state?.biomasa_cosechada_kg, 350);
+  });
+});
+
+// ── CORRECCION_REGISTRADA ──────────────────────────────────────────────────
+
+describe('projectLote — CORRECCION_REGISTRADA', () => {
+  it('aplica corrección de cantidad en MORTALIDAD_REGISTRADA', () => {
+    const eventos: OperationalEvent[] = [
+      {
+        id: 'c-1', type: 'LOTE_INICIADO', id_lote: 'corr-test',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-03-01T00:00:00Z', sync_status: 'synced',
+        payload: { especie: 'tilapia_nilotica', count_inicial: 1000, peso_inicial_g: 10,
+                   id_estanque: 'e1', id_finca: 'f1', unidad_costo_cop: 350 },
+      },
+      {
+        id: 'c-2', type: 'MORTALIDAD_REGISTRADA', id_lote: 'corr-test',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-03-05T00:00:00Z', sync_status: 'synced',
+        payload: { cantidad: 100, causa_presunta: 'digitación errónea' },
+      },
+      {
+        id: 'c-3', type: 'CORRECCION_REGISTRADA', id_lote: 'corr-test',
+        id_tenant: 't1', id_usuario: 'u2', ts: '2025-03-06T00:00:00Z', sync_status: 'synced',
+        payload: {
+          evento_original_id: 'c-2',
+          motivo: 'El operario digitó 100 en vez de 10',
+          payload_corregido: { cantidad: 10 },
+        },
+      },
+    ];
+    const state = projectLote(eventos);
+    // Sin corrección: 1000 - 100 = 900; con corrección: 1000 - 10 = 990
+    assert.equal(state?.count_actual, 990,
+      'La corrección debe cambiar el count_actual de 900 a 990');
+  });
+
+  it('corrección sólo afecta el evento indicado, no los demás', () => {
+    const eventos: OperationalEvent[] = [
+      {
+        id: 'd-1', type: 'LOTE_INICIADO', id_lote: 'corr-test2',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-03-01T00:00:00Z', sync_status: 'synced',
+        payload: { especie: 'tilapia_nilotica', count_inicial: 1000, peso_inicial_g: 10,
+                   id_estanque: 'e1', id_finca: 'f1', unidad_costo_cop: 350 },
+      },
+      {
+        id: 'd-2', type: 'MORTALIDAD_REGISTRADA', id_lote: 'corr-test2',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-03-05T00:00:00Z', sync_status: 'synced',
+        payload: { cantidad: 50 },
+      },
+      {
+        id: 'd-3', type: 'MORTALIDAD_REGISTRADA', id_lote: 'corr-test2',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-03-07T00:00:00Z', sync_status: 'synced',
+        payload: { cantidad: 20 },
+      },
+      {
+        id: 'd-4', type: 'CORRECCION_REGISTRADA', id_lote: 'corr-test2',
+        id_tenant: 't1', id_usuario: 'u2', ts: '2025-03-08T00:00:00Z', sync_status: 'synced',
+        payload: {
+          evento_original_id: 'd-2',
+          motivo: 'Error de digitación',
+          payload_corregido: { cantidad: 5 },
+        },
+      },
+    ];
+    const state = projectLote(eventos);
+    // 1000 - 5 (d-2 corregido) - 20 (d-3 sin cambio) = 975
+    assert.equal(state?.count_actual, 975);
+  });
+
+  it('corrección de LOTE_INICIADO actualiza especie y parámetros iniciales', () => {
+    const eventos: OperationalEvent[] = [
+      {
+        id: 'e-1', type: 'LOTE_INICIADO', id_lote: 'corr-test3',
+        id_tenant: 't1', id_usuario: 'u1', ts: '2025-04-01T00:00:00Z', sync_status: 'synced',
+        payload: { especie: 'cachama', count_inicial: 800, peso_inicial_g: 8,
+                   id_estanque: 'e1', id_finca: 'f1', unidad_costo_cop: 400 },
+      },
+      {
+        id: 'e-2', type: 'CORRECCION_REGISTRADA', id_lote: 'corr-test3',
+        id_tenant: 't1', id_usuario: 'u2', ts: '2025-04-02T00:00:00Z', sync_status: 'synced',
+        payload: {
+          evento_original_id: 'e-1',
+          motivo: 'Especie incorrecta en el formulario',
+          payload_corregido: { especie: 'tilapia_nilotica', count_inicial: 850 },
+        },
+      },
+    ];
+    const state = projectLote(eventos);
+    assert.equal(state?.especie, 'tilapia_nilotica');
+    assert.equal(state?.count_actual, 850);
+    assert.equal(state?.count_inicial, 850);
+  });
+});
