@@ -11,6 +11,7 @@ const ACTIONS = [
   { key: 'biometria',  label: 'Biometría',            icon: '📏', color: '#7c3aed' },
   { key: 'insumo',     label: 'Insumo\nAplicado',    icon: '💊', color: '#b45309' },
   { key: 'historial',  label: 'Historial\nEventos',  icon: '📋', color: '#475569' },
+  { key: 'cosecha',    label: 'Registrar\nCosecha',  icon: '🎣', color: '#16a34a' },
 ] as const;
 
 export default function LoteDetail() {
