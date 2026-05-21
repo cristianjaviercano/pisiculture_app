@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { projectLote, calculateLMax } from '@aquashell/shared';
+import { projectLote, calculateLMax, evaluateWaterReading, type WaterReadingInput } from '@aquashell/shared';
 import { getEventsForLote, getPendingCount } from '../../src/db/eventStore';
 import { useSession } from '../../src/hooks/useSession';
 import { SyncBanner } from '../../src/components/SyncBanner';
@@ -18,6 +18,8 @@ interface LoteRow {
   id_estanque: string;
 }
 
+type WaterStatus = 'ok' | 'warn' | 'critical' | null;
+
 interface LoteCardData extends LoteRow {
   dias: number;
   count: number;
@@ -26,6 +28,7 @@ interface LoteCardData extends LoteRow {
   lmax: number;
   retiro: boolean;
   pending: number;
+  waterStatus: WaterStatus;
 }
 
 function especie(key: string) {
@@ -52,6 +55,18 @@ export default function Dashboard() {
       const pending = await getPendingCount(db, row.id);
       if (!state) continue;
       const lmax = calculateLMax(state.biomasa_kg, 27).lmax_kg;
+
+      // Last water quality reading
+      const lastWaterRow = await db.getFirstAsync<{ payload: string }>(
+        "SELECT payload FROM evento_local WHERE id_lote=? AND type='AGUA_REGISTRADA' ORDER BY ts DESC LIMIT 1",
+        [row.id]
+      );
+      let waterStatus: WaterStatus = null;
+      if (lastWaterRow) {
+        const reading = JSON.parse(lastWaterRow.payload) as WaterReadingInput;
+        waterStatus = evaluateWaterReading(reading).systemStatus;
+      }
+
       cards.push({
         ...row,
         dias: state.dias_transcurridos,
@@ -61,6 +76,7 @@ export default function Dashboard() {
         lmax,
         retiro: state.retiro_activo,
         pending,
+        waterStatus,
       });
     }
     setLotes(cards);
@@ -105,13 +121,22 @@ export default function Dashboard() {
           >
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>{item.nombre}</Text>
-              {item.pending > 0 && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{item.pending} pendiente{item.pending > 1 ? 's' : ''}</Text>
-                </View>
-              )}
+              <View style={styles.badgeRow}>
+                {item.waterStatus && item.waterStatus !== 'ok' && (
+                  <View style={[styles.ctqBadge, { backgroundColor: item.waterStatus === 'critical' ? C.dangerLight : C.warnLight }]}>
+                    <Text style={{ color: item.waterStatus === 'critical' ? C.danger : C.warn, fontSize: 11, fontWeight: '700' }}>
+                      {item.waterStatus === 'critical' ? '🔴 Agua' : '🟡 Agua'}
+                    </Text>
+                  </View>
+                )}
+                {item.pending > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{item.pending} ↑</Text>
+                  </View>
+                )}
+              </View>
             </View>
-            <Text style={styles.cardSub}>{especie(item.especie)}</Text>
+            <Text style={styles.cardSub}>{especie(item.especie)}{item.waterStatus === 'ok' && '  💧✓'}</Text>
 
             {item.retiro && (
               <View style={styles.retiroBanner}>
@@ -161,10 +186,12 @@ const styles = StyleSheet.create({
                   borderWidth: 1, borderColor: C.border,
                   shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, elevation: 3 },
   cardHeader:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 },
-  cardTitle:    { fontSize: 17, fontWeight: '700', color: C.text },
+  cardTitle:    { fontSize: 17, fontWeight: '700', color: C.text, flex: 1 },
   cardSub:      { fontSize: 13, color: C.muted, marginBottom: S.sm },
+  badgeRow:     { flexDirection: 'row', gap: 4, alignItems: 'center' },
   badge:        { backgroundColor: C.warn, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 },
   badgeText:    { color: C.white, fontSize: 11, fontWeight: '600' },
+  ctqBadge:     { borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2 },
   retiroBanner: { backgroundColor: C.dangerLight, borderRadius: 6, padding: S.xs, marginBottom: S.sm },
   retiroText:   { color: C.danger, fontWeight: '700', fontSize: 12 },
   metrics:      { flexDirection: 'row', flexWrap: 'wrap', gap: S.sm, marginTop: S.xs },
