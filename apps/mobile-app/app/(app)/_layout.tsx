@@ -19,6 +19,7 @@ export default function AppLayout() {
       <Stack.Screen name="lote/[id]/biometria" options={{ title: 'Muestreo Biométrico' }} />
       <Stack.Screen name="lote/[id]/insumo"    options={{ title: 'Insumo Aplicado' }} />
       <Stack.Screen name="lote/[id]/historial" options={{ title: 'Historial de Eventos' }} />
+      <Stack.Screen name="lote/[id]/cosecha"   options={{ title: 'Registrar Cosecha' }} />
     </Stack>
   );
 }
