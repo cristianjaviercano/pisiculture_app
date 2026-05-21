@@ -18,18 +18,23 @@ async function getData(id: string) {
   if (!isSupabaseConfigured()) return null;
 
   const supabase = createSupabaseServerClient();
-  const { data: eventos } = await supabase
-    .from('evento_operativo')
-    .select('*')
-    .eq('id_lote', id)
-    .order('ts', { ascending: true });
+  const [{ data: lote }, { data: eventos }] = await Promise.all([
+    supabase.from('lotes').select('nombre,estanques(nombre),fincas(nombre)').eq('id', id).single(),
+    supabase.from('evento_operativo').select('*').eq('id_lote', id).order('ts', { ascending: true }),
+  ]);
 
   if (!eventos?.length) return null;
-  return eventos as OperationalEvent[];
+  return {
+    eventos: eventos as OperationalEvent[],
+    nombre:  (lote as { nombre?: string } | null)?.nombre ?? id.slice(0, 8),
+    estanque: (lote as { estanques?: { nombre: string } | null } | null)?.estanques?.nombre,
+    finca:    (lote as { fincas?: { nombre: string } | null } | null)?.fincas?.nombre,
+  };
 }
 
 export default async function LoteDetailPage({ params }: { params: { id: string } }) {
-  const eventos = await getData(params.id);
+  const data = await getData(params.id);
+  const eventos = data?.eventos ?? null;
 
   if (!isSupabaseConfigured()) {
     return (
@@ -57,7 +62,8 @@ export default async function LoteDetailPage({ params }: { params: { id: string 
       <div className="flex items-center gap-3 mb-6">
         <Link href="/dashboard" className="text-gray-400 hover:text-gray-600 text-sm">← Lotes</Link>
         <span className="text-gray-300">/</span>
-        <h1 className="text-xl font-bold text-gray-900">Lote {params.id.slice(0, 8)}</h1>
+        <h1 className="text-xl font-bold text-gray-900">{data?.nombre ?? params.id.slice(0, 8)}</h1>
+        {data?.estanque && <span className="text-sm text-gray-400">{data.estanque}{data.finca ? ` · ${data.finca}` : ''}</span>}
         {state.cosechado && (
           <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">COSECHADO</span>
         )}
