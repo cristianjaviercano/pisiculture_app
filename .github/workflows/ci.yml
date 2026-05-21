@@ -28,6 +28,42 @@ jobs:
       - name: Run tests
         run: npm run test --workspace @aquashell/shared
 
+  web-typecheck:
+    name: Web dashboard — typecheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type check
+        run: npm run typecheck --workspace @aquashell/web-dashboard
+
+  mobile-typecheck:
+    name: Mobile app — typecheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type check
+        run: npm run typecheck --workspace @aquashell/mobile-app
+
   migrations:
     name: Migrations — Flyway validation
     runs-on: ubuntu-latest
