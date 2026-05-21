@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
-import { syncPendingEvents, type SyncStatus } from '../sync/syncEngine';
+import { syncPendingEvents, pullMasterData, type SyncStatus } from '../sync/syncEngine';
 import { isSupabaseConfigured } from '../sync/supabaseClient';
 import { C, S } from '../theme';
 
@@ -20,8 +20,8 @@ export function SyncBanner({ pendingTotal, onSynced }: Props) {
     return (
       <View style={[styles.banner, styles.warnBg]}>
         <Text style={styles.warnText}>
-          📡 {pendingTotal} evento{pendingTotal > 1 ? 's' : ''} pendiente{pendingTotal > 1 ? 's' : ''} de sync
-          · Supabase no configurado
+          📡 {pendingTotal} evento{pendingTotal > 1 ? 's' : ''} pendiente{pendingTotal > 1 ? 's' : ''}
+          {' '}· Supabase no configurado
         </Text>
       </View>
     );
@@ -29,22 +29,41 @@ export function SyncBanner({ pendingTotal, onSynced }: Props) {
 
   async function handleSync() {
     setStatus('syncing');
-    const result = await syncPendingEvents(db);
-    if (result.error) {
+
+    // Push pending events + pull remote events in parallel
+    const [pushResult, pullResult] = await Promise.all([
+      syncPendingEvents(db),
+      pullMasterData(db),
+    ]);
+
+    if (pushResult.error) {
       setStatus('error');
-      setLastMsg(result.error);
+      setLastMsg(pushResult.error);
     } else {
       setStatus('success');
-      setLastMsg(`↑ ${result.pushed} enviado${result.pushed !== 1 ? 's' : ''}${result.failed > 0 ? ` · ${result.failed} fallido(s)` : ''}`);
+      const parts: string[] = [];
+      if (pushResult.pushed > 0) {
+        parts.push(`↑ ${pushResult.pushed} enviado${pushResult.pushed !== 1 ? 's' : ''}`);
+      }
+      if (pushResult.pulled > 0) {
+        parts.push(`↓ ${pushResult.pulled} descargado${pushResult.pulled !== 1 ? 's' : ''}`);
+      }
+      if (pullResult.lotes > 0 || pullResult.estanques > 0) {
+        parts.push(`+${pullResult.lotes} lote${pullResult.lotes !== 1 ? 's' : ''}`);
+      }
+      if (pushResult.failed > 0) {
+        parts.push(`${pushResult.failed} error${pushResult.failed !== 1 ? 'es' : ''}`);
+      }
+      setLastMsg(parts.length ? parts.join(' · ') : 'Sincronizado');
       onSynced();
     }
-    setTimeout(() => setStatus('idle'), 4000);
+    setTimeout(() => setStatus('idle'), 5000);
   }
 
   if (pendingTotal === 0 && status === 'idle') return null;
 
-  const bg   = status === 'error' ? C.dangerLight : status === 'success' ? C.okLight : C.warnLight;
-  const text = status === 'error' ? C.danger : status === 'success' ? C.ok : C.warn;
+  const bg    = status === 'error' ? C.dangerLight : status === 'success' ? C.okLight : C.warnLight;
+  const color = status === 'error' ? C.danger      : status === 'success' ? C.ok      : C.warn;
 
   return (
     <View style={[styles.banner, { backgroundColor: bg }]}>
@@ -54,14 +73,14 @@ export function SyncBanner({ pendingTotal, onSynced }: Props) {
           <Text style={[styles.msg, { color: C.primary, marginLeft: S.xs }]}>Sincronizando…</Text>
         </View>
       ) : status === 'success' || status === 'error' ? (
-        <Text style={[styles.msg, { color: text }]}>{lastMsg}</Text>
+        <Text style={[styles.msg, { color }]}>{lastMsg}</Text>
       ) : (
         <View style={styles.row}>
-          <Text style={[styles.msg, { color: text, flex: 1 }]}>
+          <Text style={[styles.msg, { color, flex: 1 }]}>
             📡 {pendingTotal} evento{pendingTotal > 1 ? 's' : ''} pendiente{pendingTotal > 1 ? 's' : ''}
           </Text>
           <TouchableOpacity style={styles.syncBtn} onPress={() => void handleSync()}>
-            <Text style={styles.syncBtnText}>Sincronizar</Text>
+            <Text style={styles.syncBtnText}>↑↓ Sync</Text>
           </TouchableOpacity>
         </View>
       )}
