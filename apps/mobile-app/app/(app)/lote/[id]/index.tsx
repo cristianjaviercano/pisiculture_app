@@ -1,5 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import { calculateLMax, estimateHarvestDate } from '@aquashell/shared';
 import { useLote } from '../../../../src/hooks/useLote';
 import { C, S } from '../../../../src/theme';
@@ -16,7 +18,26 @@ const ACTIONS = [
 
 export default function LoteDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const db = useSQLiteContext();
   const { state, loading } = useLote(id);
+  const [archiving, setArchiving] = useState(false);
+
+  async function handleArchive() {
+    const confirmed = await new Promise<boolean>(resolve =>
+      Alert.alert(
+        'Archivar lote',
+        'El lote dejará de aparecer en el dashboard. Asegúrate de que el evento de cosecha ya esté sincronizado.',
+        [
+          { text: 'Cancelar', onPress: () => resolve(false), style: 'cancel' },
+          { text: 'Archivar', onPress: () => resolve(true), style: 'destructive' },
+        ]
+      )
+    );
+    if (!confirmed) return;
+    setArchiving(true);
+    await db.runAsync('UPDATE lotes_local SET activo=0 WHERE id=?', [id]);
+    router.replace('/(app)');
+  }
 
   if (loading) {
     return <View style={styles.center}><ActivityIndicator size="large" color={C.primary} /></View>;
@@ -32,6 +53,21 @@ export default function LoteDetail() {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
+      {state.cosechado && (
+        <View style={styles.cosechadoBanner}>
+          <Text style={styles.cosechadoTitle}>
+            🎣 Ciclo cerrado{state.biomasa_cosechada_kg != null ? ` · ${state.biomasa_cosechada_kg} kg cosechados` : ''}
+          </Text>
+          <TouchableOpacity
+            style={[styles.archiveBtn, archiving && styles.disabled]}
+            onPress={() => void handleArchive()}
+            disabled={archiving}
+          >
+            <Text style={styles.archiveBtnText}>{archiving ? 'Archivando…' : 'Archivar lote'}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {state.retiro_activo && (
         <View style={styles.retiroBanner}>
           <Text style={styles.retiroText}>
@@ -98,6 +134,11 @@ const styles = StyleSheet.create({
   container:     { padding: S.md, paddingBottom: S.xl },
   center:        { flex: 1, justifyContent: 'center', alignItems: 'center' },
   empty:         { color: C.muted, fontSize: 16 },
+  cosechadoBanner: { backgroundColor: C.okLight, borderRadius: 8, padding: S.sm, marginBottom: S.md },
+  cosechadoTitle:  { color: C.ok, fontWeight: '700', textAlign: 'center', marginBottom: S.xs },
+  archiveBtn:      { backgroundColor: C.ok, borderRadius: 6, paddingVertical: 6, paddingHorizontal: S.md, alignSelf: 'center' },
+  archiveBtnText:  { color: C.white, fontWeight: '700', fontSize: 13 },
+  disabled:        { opacity: 0.5 },
   retiroBanner:  { backgroundColor: C.dangerLight, borderRadius: 8, padding: S.sm, marginBottom: S.md },
   retiroText:    { color: C.danger, fontWeight: '700', textAlign: 'center' },
   section:       { backgroundColor: C.surface, borderRadius: 12, padding: S.md,
