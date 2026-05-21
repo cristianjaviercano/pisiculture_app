@@ -8,6 +8,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { projectLote, calculateLMax } from '@aquashell/shared';
 import { getEventsForLote, getPendingCount } from '../../src/db/eventStore';
 import { useSession } from '../../src/hooks/useSession';
+import { SyncBanner } from '../../src/components/SyncBanner';
 import { C, S } from '../../src/theme';
 
 interface LoteRow {
@@ -38,6 +39,7 @@ export default function Dashboard() {
   const { user, logout } = useSession();
   const [lotes, setLotes] = useState<LoteCardData[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const totalPending = lotes.reduce((s, l) => s + l.pending, 0);
 
   const load = useCallback(async () => {
     const rows = await db.getAllAsync<LoteRow>(
@@ -80,6 +82,8 @@ export default function Dashboard() {
           <Text style={styles.logoutBtn}>Salir</Text>
         </TouchableOpacity>
       </View>
+
+      <SyncBanner pendingTotal={totalPending} onSynced={() => void load()} />
 
       <FlatList
         data={lotes}
