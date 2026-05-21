@@ -12,6 +12,7 @@ export default function AppLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: 'Mis Lotes' }} />
+      <Stack.Screen name="lote/nuevo" options={{ title: 'Nuevo Ciclo de Producción' }} />
       <Stack.Screen name="lote/[id]/index" options={{ title: 'Detalle del Lote' }} />
       <Stack.Screen name="lote/[id]/agua" options={{ title: 'Calidad del Agua' }} />
       <Stack.Screen name="lote/[id]/alimento" options={{ title: 'Suministro de Alimento' }} />
