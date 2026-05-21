@@ -6,6 +6,7 @@ export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error' | 'offline' | 
 export interface SyncResult {
   pushed: number;
   failed: number;
+  pulled: number;
   error?: string;
 }
 
@@ -72,37 +73,112 @@ export async function syncPendingEvents(db: SQLiteDatabase): Promise<SyncResult>
     }
   }
 
-  return { pushed, failed };
+  // Pull remote events not yet in local DB (events created on other devices)
+  const pulled = await pullRemoteEvents(db);
+
+  return { pushed, failed, pulled };
 }
 
-export async function pullMasterData(db: SQLiteDatabase): Promise<void> {
+async function pullRemoteEvents(db: SQLiteDatabase): Promise<number> {
   const supabase = getSupabase();
-  if (!supabase) return;
+  if (!supabase) return 0;
 
-  // Pull lotes activos del tenant (usando app.tenant_id de la sesión local)
   const sessionRow = await db.getFirstAsync<{ value: string }>(
     "SELECT value FROM session_local WHERE key='current_user'"
   );
-  if (!sessionRow) return;
+  if (!sessionRow) return 0;
 
   const user = JSON.parse(sessionRow.value) as { id_tenant: string };
 
+  // Get local lote IDs to limit the pull scope
+  const localLotes = await db.getAllAsync<{ id: string }>('SELECT id FROM lotes_local WHERE activo=1');
+  const loteIds = localLotes.map(l => l.id);
+  if (loteIds.length === 0) return 0;
+
+  const { data: remoteEvents } = await supabase
+    .from('evento_operativo')
+    .select('id, type, id_lote, id_tenant, id_usuario, ts, payload')
+    .in('id_lote', loteIds)
+    .eq('id_tenant', user.id_tenant)
+    .order('ts', { ascending: true });
+
+  if (!remoteEvents?.length) return 0;
+
+  let pulled = 0;
+  for (const ev of remoteEvents) {
+    const exists = await db.getFirstAsync<{ id: string }>(
+      'SELECT id FROM evento_local WHERE id=?', [ev.id]
+    );
+    if (!exists) {
+      await db.runAsync(
+        'INSERT INTO evento_local VALUES (?,?,?,?,?,?,?,?)',
+        [ev.id, ev.type, ev.id_lote, ev.id_tenant, ev.id_usuario,
+         ev.ts, JSON.stringify(ev.payload), 'synced']
+      );
+      pulled++;
+    }
+  }
+  return pulled;
+}
+
+export async function pullMasterData(db: SQLiteDatabase): Promise<{ lotes: number; estanques: number }> {
+  const supabase = getSupabase();
+  if (!supabase) return { lotes: 0, estanques: 0 };
+
+  const sessionRow = await db.getFirstAsync<{ value: string }>(
+    "SELECT value FROM session_local WHERE key='current_user'"
+  );
+  if (!sessionRow) return { lotes: 0, estanques: 0 };
+
+  const user = JSON.parse(sessionRow.value) as { id_tenant: string };
+
+  // Pull estanques
+  let estanquesCount = 0;
+  const { data: estanques } = await supabase
+    .from('estanques')
+    .select('id, id_finca, id_tenant, nombre, codigo_interno, area_m2, volumen_m3, tipo')
+    .eq('id_tenant', user.id_tenant);
+
+  if (estanques) {
+    for (const e of estanques) {
+      const exists = await db.getFirstAsync<{ id: string }>(
+        'SELECT id FROM estanques_local WHERE id=?', [e.id]
+      );
+      if (!exists) {
+        await db.runAsync(
+          'INSERT INTO estanques_local VALUES (?,?,?,?,?,?,?,?)',
+          [e.id, e.id_finca, e.id_tenant, e.nombre,
+           e.codigo_interno ?? '', e.area_m2 ?? 0, e.volumen_m3 ?? 0, e.tipo ?? 'tierra']
+        );
+        estanquesCount++;
+      }
+    }
+  }
+
+  // Pull active lotes
+  let lotesCount = 0;
   const { data: lotes } = await supabase
     .from('lotes')
-    .select('id, id_estanque, id_finca, id_tenant, especie, estado, created_at')
+    .select('id, id_estanque, id_finca, id_tenant, especie, nombre, estado, created_at')
     .eq('id_tenant', user.id_tenant)
     .eq('estado', 'activo');
 
   if (lotes) {
     for (const l of lotes) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO lotes_local
-           (id, id_estanque, id_finca, id_tenant, especie, nombre, activo, created_at)
-         VALUES (?,?,?,?,?,?,?,?)`,
-        [l.id, l.id_estanque, l.id_finca, l.id_tenant,
-         l.especie, `Lote ${l.id.slice(0, 8)}`, 1,
-         l.created_at ?? new Date().toISOString()]
+      const exists = await db.getFirstAsync<{ id: string }>(
+        'SELECT id FROM lotes_local WHERE id=?', [l.id]
       );
+      if (!exists) {
+        await db.runAsync(
+          'INSERT INTO lotes_local (id, id_estanque, id_finca, id_tenant, especie, nombre, activo, created_at) VALUES (?,?,?,?,?,?,?,?)',
+          [l.id, l.id_estanque, l.id_finca, l.id_tenant,
+           l.especie, l.nombre ?? `Lote ${l.id.slice(0, 8)}`, 1,
+           l.created_at ?? new Date().toISOString()]
+        );
+        lotesCount++;
+      }
     }
   }
+
+  return { lotes: lotesCount, estanques: estanquesCount };
 }
