@@ -2,8 +2,11 @@ import Link from 'next/link';
 import { LogoutButton } from './LogoutButton';
 
 const NAV = [
-  { href: '/dashboard',         label: '🏠 Dashboard' },
-  { href: '/dashboard/eventos', label: '📋 Eventos'   },
+  { href: '/dashboard',                    label: '🏠 Dashboard'    },
+  { href: '/dashboard/eventos',            label: '📋 Eventos'      },
+  { href: '/dashboard/gerente',            label: '📊 Gerente'      },
+  { href: '/dashboard/gerente/proyecciones', label: '📈 Proyecciones' },
+  { href: '/dashboard/gerente/roi',        label: '💰 ROI'          },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
