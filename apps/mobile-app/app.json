@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Aquashell",
+    "slug": "aquashell",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "aquashell",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#0e7490"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "co.aquashell.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0e7490"
+      },
+      "package": "co.aquashell.app"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
