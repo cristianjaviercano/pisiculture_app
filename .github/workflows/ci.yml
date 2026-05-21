@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**", "feature/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  domain:
+    name: Domain — typecheck + tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type check
+        run: npm run typecheck --workspace @aquashell/shared
+
+      - name: Run tests
+        run: npm run test --workspace @aquashell/shared
+
+  migrations:
+    name: Migrations — Flyway validation
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: aquashell_test
+          POSTGRES_USER: aquashell_test
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Flyway migrations
+        uses: docker://flyway/flyway:10-alpine
+        with:
+          args: >
+            -url=jdbc:postgresql://postgres:5432/aquashell_test
+            -user=aquashell_test
+            -password=testpassword
+            -locations=filesystem:/github/workspace/db/migrations
+            migrate
