@@ -99,27 +99,43 @@ export function estimateHarvestDate(
 /**
  * Deriva el estado actual de un lote a partir de su stream de eventos (event sourcing read model).
  * Los eventos son inmutables; esta función es la única forma de obtener estado derivado.
+ * Las correcciones (CORRECCION_REGISTRADA) se aplican sobre el payload del evento original
+ * antes de procesarlo, respetando la inmutabilidad del stream.
  */
 export function projectLote(events: OperationalEvent[]): LoteState | null {
   const sorted = [...events].sort((a, b) => a.ts.localeCompare(b.ts));
 
+  // Pre-scan corrections: evento_original_id → campos corregidos
+  const corrections = new Map<string, Record<string, unknown>>();
+  for (const ev of sorted) {
+    if (ev.type === 'CORRECCION_REGISTRADA') {
+      corrections.set(ev.payload.evento_original_id, ev.payload.payload_corregido);
+    }
+  }
+
   let state: LoteState | null = null;
 
   for (const event of sorted) {
+    const override = corrections.get(event.id);
+    // Effective payload: original merged with coordinator correction if present
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ep: any = override
+      ? { ...(event.payload as Record<string, unknown>), ...override }
+      : event.payload;
+
     switch (event.type) {
       case 'LOTE_INICIADO': {
-        const p = event.payload;
-        const count_actual = p.count_inicial;
-        const biomasa_kg = parseFloat(((count_actual * p.peso_inicial_g) / 1000).toFixed(2));
+        const count_actual = ep.count_inicial as number;
+        const biomasa_kg = parseFloat(((count_actual * ep.peso_inicial_g) / 1000).toFixed(2));
         state = {
           id_lote: event.id_lote,
-          especie: p.especie,
-          id_estanque: p.id_estanque,
-          id_finca: p.id_finca,
+          especie: ep.especie,
+          id_estanque: ep.id_estanque,
+          id_finca: ep.id_finca,
           fecha_inicio: event.ts.slice(0, 10),
-          count_inicial: p.count_inicial,
+          count_inicial: count_actual,
           count_actual,
-          peso_actual_g: p.peso_inicial_g,
+          peso_actual_g: ep.peso_inicial_g,
           biomasa_kg,
           total_alimento_kg: 0,
           fca_acumulado: null,
@@ -136,7 +152,7 @@ export function projectLote(events: OperationalEvent[]): LoteState | null {
       case 'ALIMENTO_SUMINISTRADO': {
         if (!state) break;
         state.total_alimento_kg = parseFloat(
-          (state.total_alimento_kg + event.payload.kg_suministrado).toFixed(2),
+          (state.total_alimento_kg + (ep.kg_suministrado as number)).toFixed(2),
         );
         const inicial_kg = (state.count_inicial * state.peso_actual_g) / 1000;
         const fca = state.total_alimento_kg > 0 && state.biomasa_kg > inicial_kg
@@ -148,23 +164,22 @@ export function projectLote(events: OperationalEvent[]): LoteState | null {
 
       case 'MORTALIDAD_REGISTRADA': {
         if (!state) break;
-        state.count_actual = Math.max(0, state.count_actual - event.payload.cantidad);
+        state.count_actual = Math.max(0, state.count_actual - (ep.cantidad as number));
         state.biomasa_kg = parseFloat(((state.count_actual * state.peso_actual_g) / 1000).toFixed(2));
         break;
       }
 
       case 'MUESTREO_BIOMETRICO': {
         if (!state) break;
-        const m = event.payload;
-        if (m.valid) {
-          state.peso_actual_g = m.peso_promedio_g;
-          state.biomasa_kg = parseFloat(((state.count_actual * m.peso_promedio_g) / 1000).toFixed(2));
+        if (ep.valid as boolean) {
+          state.peso_actual_g = ep.peso_promedio_g as number;
+          state.biomasa_kg = parseFloat(((state.count_actual * (ep.peso_promedio_g as number)) / 1000).toFixed(2));
         }
         state.ultimo_muestreo = {
           fecha: event.ts.slice(0, 10),
-          peso_promedio_g: m.peso_promedio_g,
-          cv_pct: m.cv_pct,
-          valid: m.valid,
+          peso_promedio_g: ep.peso_promedio_g as number,
+          cv_pct: ep.cv_pct as number,
+          valid: ep.valid as boolean,
         };
         break;
       }
@@ -172,15 +187,15 @@ export function projectLote(events: OperationalEvent[]): LoteState | null {
       case 'INSUMO_APLICADO': {
         if (!state) break;
         const today = new Date().toISOString().slice(0, 10);
-        state.retiro_activo = event.payload.fecha_fin_retiro >= today;
-        state.fecha_fin_retiro = event.payload.fecha_fin_retiro;
+        state.retiro_activo = (ep.fecha_fin_retiro as string) >= today;
+        state.fecha_fin_retiro = ep.fecha_fin_retiro as string;
         break;
       }
 
       case 'LOTE_COSECHADO': {
         if (!state) break;
         state.cosechado = true;
-        state.biomasa_cosechada_kg = event.payload.biomasa_cosechada_kg;
+        state.biomasa_cosechada_kg = ep.biomasa_cosechada_kg as number;
         break;
       }
 
