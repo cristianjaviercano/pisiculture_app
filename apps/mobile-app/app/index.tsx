@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Redirect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { pullMasterData } from '../src/sync/syncEngine';
+import { isSupabaseConfigured } from '../src/sync/supabaseClient';
 import { C } from '../src/theme';
 
 export default function Index() {
@@ -13,7 +15,16 @@ export default function Index() {
     db.getFirstAsync<{ value: string }>(
       "SELECT value FROM session_local WHERE key='current_user'"
     )
-      .then(row => { setHasSession(!!row); setReady(true); })
+      .then(row => {
+        const logged = !!row;
+        setHasSession(logged);
+        setReady(true);
+        // Background pull: fetch fresh lotes + estanques + events from Supabase
+        // without blocking navigation. Errors are silently ignored on startup.
+        if (logged && isSupabaseConfigured()) {
+          void pullMasterData(db).catch(() => undefined);
+        }
+      })
       .catch(() => setReady(true));
   }, [db]);
 
