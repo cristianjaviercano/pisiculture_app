@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@aquashell/shared": "*",
+    "@supabase/supabase-js": "^2.43.0",
     "expo": "~51.0.0",
     "expo-router": "~3.5.0",
     "expo-sqlite": "~14.0.0",
