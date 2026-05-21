@@ -9,6 +9,8 @@ const ACTIONS = [
   { key: 'alimento',   label: 'Suministro\nAlimento', icon: '🌾', color: '#059669' },
   { key: 'mortalidad', label: 'Mortalidad',           icon: '💀', color: '#dc2626' },
   { key: 'biometria',  label: 'Biometría',            icon: '📏', color: '#7c3aed' },
+  { key: 'insumo',     label: 'Insumo\nAplicado',    icon: '💊', color: '#b45309' },
+  { key: 'historial',  label: 'Historial\nEventos',  icon: '📋', color: '#475569' },
 ] as const;
 
 export default function LoteDetail() {
