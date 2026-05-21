@@ -1,0 +1,17 @@
+{
+  "name": "aquashell-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo Aquashell — plataforma de control acuícola offline-first. Web (Next.js) + Móvil (React Native/Expo) + dominio compartido (TypeScript).",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspace @aquashell/shared",
+    "typecheck": "npm run typecheck --workspace @aquashell/shared"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
