@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: aquashell_dev
+      POSTGRES_USER: aquashell_dev
+      POSTGRES_PASSWORD: devpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aquashell_dev -d aquashell_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    command: >
+      -url=jdbc:postgresql://postgres:5432/aquashell_dev
+      -user=aquashell_dev
+      -password=devpassword
+      -locations=filesystem:/flyway/sql
+      migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:
