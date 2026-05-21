@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getAllSnapshots } from '@/lib/gerente';
 import { isSupabaseConfigured } from '@/lib/supabase/server';
+import { ExportButton } from './ExportButton';
 
 function cop(n: number) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP',
@@ -38,7 +39,7 @@ export default async function GerentePage() {
           <h1 className="text-2xl font-bold text-gray-900">Dashboard Gerencial</h1>
           <p className="text-gray-500 text-sm mt-0.5">KPIs consolidados · Vista Gerente</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center flex-wrap">
           {demo && (
             <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">
               MODO DEMO
@@ -48,6 +49,24 @@ export default async function GerentePage() {
             <span className="bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full">
               {totalPending} evento{totalPending > 1 ? 's' : ''} sin sincronizar
             </span>
+          )}
+          {snapshots.length > 0 && (
+            <ExportButton rows={snapshots.map(s => ({
+              estanque:       s.estanque,
+              finca:          s.finca,
+              especie:        s.state.especie,
+              dias:           s.state.dias_transcurridos,
+              peces:          s.state.count_actual,
+              biomasa:        s.state.biomasa_kg,
+              pesoPromG:      s.state.peso_actual_g,
+              lmax:           s.lmax,
+              fca:            s.state.fca_acumulado,
+              cosechaEstDias: s.harvest.days_remaining,
+              alimentoKg:     s.state.total_alimento_kg,
+              roiPct:         s.roi.roi_pct,
+              margenCop:      s.roi.gross_margin,
+              retiro:         s.state.retiro_activo,
+            }))} />
           )}
         </div>
       </div>
