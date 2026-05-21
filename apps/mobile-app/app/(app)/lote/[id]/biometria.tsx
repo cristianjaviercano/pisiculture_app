@@ -93,7 +93,7 @@ export default function BiometriaScreen() {
           placeholderTextColor={C.muted}
           textAlignVertical="top"
         />
-        <Text style={styles.counter}>{weights.length} peses ingresados</Text>
+        <Text style={styles.counter}>{weights.length} peces ingresados</Text>
       </View>
 
       {sample && (
