@@ -103,11 +103,21 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">Lotes Activos</h1>
           <p className="text-gray-500 text-sm mt-0.5">Vista del Coordinador</p>
         </div>
-        {demo && (
-          <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">
-            MODO DEMO — sin Supabase
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {demo && (
+            <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">
+              MODO DEMO — sin Supabase
+            </span>
+          )}
+          {!demo && (
+            <Link
+              href="/dashboard/lotes/nuevo"
+              className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+            >
+              + Nuevo Lote
+            </Link>
+          )}
+        </div>
       </div>
 
       {lotes.length === 0 ? (
