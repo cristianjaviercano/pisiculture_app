@@ -1,0 +1,23 @@
+{
+  "name": "@aquashell/web-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@aquashell/shared": "*",
+    "@supabase/supabase-js": "^2.43.0",
+    "next": "14.2.3",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.4.5"
+  }
+}
