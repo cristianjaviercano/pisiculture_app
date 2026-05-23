@@ -74,7 +74,7 @@ export async function getAllSnapshots(): Promise<LoteSnapshot[]> {
   if (!lotes?.length) return [];
 
   const snapshots: LoteSnapshot[] = [];
-  for (const l of lotes as Array<{ id: string; estanques: { nombre: string } | null; fincas: { nombre: string } | null }>) {
+  for (const l of lotes as unknown as Array<{ id: string; estanques: { nombre: string } | null; fincas: { nombre: string } | null }>) {
     const { data: eventos } = await supabase
       .from('evento_operativo')
       .select('*')
