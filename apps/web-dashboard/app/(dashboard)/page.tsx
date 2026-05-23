@@ -49,7 +49,7 @@ async function getLotes(): Promise<LoteCard[]> {
   if (!lotes?.length) return [];
 
   const cards: LoteCard[] = [];
-  for (const row of lotes as LoteRow[]) {
+  for (const row of lotes as unknown as LoteRow[]) {
     const { data: eventos } = await supabase
       .from('evento_operativo')
       .select('*')
