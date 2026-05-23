@@ -15,7 +15,7 @@ async function getEstanques(): Promise<EstanqueRow[]> {
     .from('estanques')
     .select('id, nombre, id_finca, fincas(nombre)')
     .order('nombre');
-  return (data ?? []) as EstanqueRow[];
+  return (data ?? []) as unknown as EstanqueRow[];
 }
 
 export default async function NuevoLotePage() {
