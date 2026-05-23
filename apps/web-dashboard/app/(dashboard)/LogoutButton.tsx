@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
-import { isSupabaseConfigured } from '@/lib/supabase/server';
 
 export function LogoutButton() {
   const router = useRouter();
