@@ -1,23 +1,25 @@
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request });
 
-  const supabaseUrl  = process.env['NEXT_PUBLIC_SUPABASE_URL'];
-  const supabaseKey  = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+  const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'];
+  const supabaseKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
 
-  // Skip auth check if Supabase is not configured (dev mode without backend)
+  // Skip auth check if Supabase is not configured (demo mode)
   if (!supabaseUrl || !supabaseKey) return response;
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
-      getAll: () => request.cookies.getAll(),
-      setAll: (cookiesToSet) => {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options)
-        );
+      get: (name: string) => request.cookies.get(name)?.value,
+      set: (name: string, value: string, options: CookieOptions) => {
+        request.cookies.set({ name, value, ...options });
+        response.cookies.set({ name, value, ...options });
+      },
+      remove: (name: string, options: CookieOptions) => {
+        request.cookies.set({ name, value: '', ...options });
+        response.cookies.set({ name, value: '', ...options });
       },
     },
   });
