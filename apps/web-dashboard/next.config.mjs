@@ -12,6 +12,10 @@ const nextConfig = {
       ...config.resolve.alias,
       '@aquashell/shared': path.resolve(__dirname, '../../packages/shared/src/index.ts'),
     };
+    // shared package uses .js extensions for ESM; map to .ts at webpack build time
+    config.resolve.extensionAlias = {
+      '.js': ['.ts', '.js'],
+    };
     return config;
   },
 };
