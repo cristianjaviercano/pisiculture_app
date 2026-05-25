@@ -35,3 +35,7 @@ Thumbs.db
 
 # Docker volumes (local only)
 pg_data/
+
+# Vercel local config (project-specific, not for repo)
+.vercel/
+vercel.json
