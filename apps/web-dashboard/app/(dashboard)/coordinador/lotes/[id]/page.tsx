@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createSupabaseServerClient, isSupabaseConfigured } from '../../../../../lib/supabase/server';
 import type { OperationalEvent } from '@aquashell/shared';
 import { CorrectionForm } from './CorrectionForm';
+import { EventForm } from './EventForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -73,16 +74,19 @@ export default async function LoteCorrectorPage({
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <Link
-          href="/dashboard/coordinador"
-          className="text-sm text-primary-600 hover:text-primary-800"
-        >
-          ← Coordinador
-        </Link>
-        <h1 className="text-xl font-bold text-slate-800">
-          Eventos · {params.id.slice(0, 12)}…
-        </h1>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/coordinador"
+            className="text-sm text-primary-600 hover:text-primary-800"
+          >
+            ← Coordinador
+          </Link>
+          <h1 className="text-xl font-bold text-slate-800">
+            Eventos · {params.id.slice(0, 12)}…
+          </h1>
+        </div>
+        <EventForm loteId={params.id} />
       </div>
 
       {events.length === 0 ? (
