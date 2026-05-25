@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { saveCorrectionAction } from './actions';
+import { VoiceButton } from '../../../../../components/VoiceButton';
 
 interface Props {
   eventId: string;
@@ -92,9 +93,12 @@ export function CorrectionForm({ eventId, loteId, eventType }: Props) {
         </p>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-slate-700">
-            Motivo de corrección <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-slate-700">
+              Motivo de corrección <span className="text-red-500">*</span>
+            </label>
+            <VoiceButton onResult={text => setMotivo(v => v ? v + ' ' + text : text)} />
+          </div>
           <input
             type="text"
             value={motivo}
