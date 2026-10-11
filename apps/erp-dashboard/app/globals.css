@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:wght@400;600&display=swap');
+
+/* ── Design tokens ───────────────────────────────────────────────── */
+:root {
+  --ac: #0D6B6B;
+  --ac-hover: #0a5454;
+  --ac-light: #e0f2f2;
+  --ac-mid: #1a8585;
+
+  --ok: #216B45;
+  --ok-bg: #e6f4ec;
+  --warn: #8A6416;
+  --warn-bg: #fef9ec;
+  --err: #96302A;
+  --err-bg: #fdecea;
+  --inf: #1a4f8a;
+  --inf-bg: #e8f1fb;
+
+  --bg: #f5f7fa;
+  --sur: #ffffff;
+  --sur2: #f0f4f8;
+  --brd: #e1e5ea;
+  --brd2: #c8cdd5;
+
+  --tx: #111827;
+  --tx2: #374151;
+  --tx3: #6b7280;
+  --tx4: #9ca3af;
+
+  --sidebar-w: 240px;
+  --topbar-h: 56px;
+
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-serif: 'IBM Plex Serif', Georgia, serif;
+
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow: 0 4px 12px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1117;
+    --sur: #161b22;
+    --sur2: #1c2330;
+    --brd: #30363d;
+    --brd2: #484f58;
+    --tx: #e6edf3;
+    --tx2: #c9d1d9;
+    --tx3: #8b949e;
+    --tx4: #484f58;
+    --ac-light: #0d2e2e;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0e1117;
+  --sur: #161b22;
+  --sur2: #1c2330;
+  --brd: #30363d;
+  --brd2: #484f58;
+  --tx: #e6edf3;
+  --tx2: #c9d1d9;
+  --tx3: #8b949e;
+  --tx4: #484f58;
+  --ac-light: #0d2e2e;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--tx);
+  line-height: 1.6;
+}
+
+a { color: var(--ac); text-decoration: none; }
+a:hover { color: var(--ac-hover); }
+
+button { cursor: pointer; font-family: var(--font-sans); }
+input, textarea, select { font-family: var(--font-sans); }
+
+/* ── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--brd2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--tx4); }
+
+/* ── Typography helpers ──────────────────────────────────────────── */
+.serif { font-family: var(--font-serif); }
+.mono  { font-family: var(--font-mono); }
+
+/* ── Utility ─────────────────────────────────────────────────────── */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
